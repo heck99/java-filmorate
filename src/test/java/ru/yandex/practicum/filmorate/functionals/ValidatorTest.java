@@ -9,15 +9,14 @@ import ru.yandex.practicum.filmorate.models.User;
 
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 class ValidatorTest {
 
     @Test
     public void shouldReturnTrueWhenFilmDataIsCorrect() {
         Film film = new Film("name", "description", LocalDate.of(2020, 10, 10), 100);
-        assertEquals(Validator.filmIsValid(film), true);
+        assertTrue(Validator.filmIsValid(film));
     }
 
     @Test
@@ -66,7 +65,7 @@ class ValidatorTest {
     @Test
     public void shouldReturnTrueWhenUserDataIsCorrect() {
         User user = new User("name", "email@mail.ru", "login", LocalDate.of(1999, 6, 28));
-        assertEquals(Validator.userIsValid(user), true);
+        assertTrue(Validator.userIsValid(user));
     }
 
     @Test

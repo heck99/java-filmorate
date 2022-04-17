@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.functionals.Validator;
 import ru.yandex.practicum.filmorate.models.Film;
 import ru.yandex.practicum.filmorate.models.User;
 
+import javax.validation.Valid;
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -25,19 +26,18 @@ public class FilmController {
     }
 
     @PostMapping
-    public Film postFilm(@RequestBody Film film) {
+    public Film postFilm(@Valid @RequestBody Film film) {
         log.info("/POST: " + film.toString());
-        Validator.filmIsValid(film);
+        //Validator.filmIsValid(film);
         film.setId(films.size());
         films.put(film.getId(), film);
         return film;
     }
 
     @PutMapping
-    public Film putFilm (@RequestBody Film film) {
+    public Film putFilm (@Valid @RequestBody Film film) {
         log.info("/PUT: " + film.toString());
-        Validator.filmIsValid(film);
-
+        //Validator.filmIsValid(film);
         if(film.getId() != null) {
             if(films.containsKey(film.getId())) {
                 films.put(film.getId(), film);
