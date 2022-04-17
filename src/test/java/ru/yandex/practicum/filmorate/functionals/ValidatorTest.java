@@ -92,12 +92,6 @@ class ValidatorTest {
     }
 
     @Test
-    public void shouldReturnValidatorExceptionWhenLoginContainsSpaces() {
-        User user = new User("name", "email@mail.ru", "12 dsf", LocalDate.of(1999, 6, 28));
-        assertThrows(ValidationException.class, () -> Validator.userIsValid(user));
-    }
-
-    @Test
     public void shouldReturnValidatorExceptionWhenDateBirthdayIsNull() {
         User user = new User("name", "email@mail.ru", "12 dsf", null);
         assertThrows(ValidationException.class, () -> Validator.userIsValid(user));
