@@ -28,7 +28,7 @@ public class FilmController {
     public Film postFilm(@Valid @RequestBody Film film) {
         log.info("/POST: " + film.toString());
         //Validator.filmIsValid(film);
-        film.setId(films.size());
+        film.setId(films.size() + 1);
         films.put(film.getId(), film);
         return film;
     }
@@ -46,7 +46,7 @@ public class FilmController {
                 throw new FilmDoesNotExistsException("Film with this id doesn't exist");
             }
         } else {
-            film.setId(films.size());
+            film.setId(films.size() + 1);
             films.put(film.getId(), film);
             log.info("New film has been added: " + film.toString());
         }

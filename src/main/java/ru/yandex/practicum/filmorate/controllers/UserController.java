@@ -38,7 +38,7 @@ public class UserController {
         }
         /*Может не совсем корректно присваивать id через количество элементов в мапе, но так как у нас это временное
         хранилеще, видимо, на 2 спринта и у нас нет эндпоинта для удаление пользователя, тогда должно работать верно*/
-        user.setId(users.size());
+        user.setId(users.size() + 1);
         users.put(user.getId(), user);
         return user;
     }
@@ -59,7 +59,7 @@ public class UserController {
                 throw new UserDoesNotExistException("User with this id doesn't exist");
             }
         } else {
-            userToUpdate.setId(users.size());
+            userToUpdate.setId(users.size() + 1);
             users.put(userToUpdate.getId(), userToUpdate);
             log.info("New user has been added: " + userToUpdate.toString());
         }

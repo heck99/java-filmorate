@@ -25,10 +25,6 @@ public class Validator {
             log.warn("Login is blank: " + login);
             throw new ValidationException("Login is blank");
         }
-        if(login.contains(" ")) {
-            log.warn("Login contains spaces: " + login);
-            throw new ValidationException("Login contains spaces");
-        }
         LocalDate dateOfBirthday = user.getBirthday();
         if(dateOfBirthday == null) {
             log.warn("Date of Birthday in empty");
