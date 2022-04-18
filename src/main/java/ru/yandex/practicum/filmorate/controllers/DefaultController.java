@@ -10,7 +10,6 @@ package ru.yandex.practicum.filmorate.controllers;
         import java.util.HashMap;
 
 @Slf4j
-@RestController
 public abstract class DefaultController<T extends DefaultModel> {
 
     HashMap<Integer, T> data = new HashMap<>();
@@ -49,8 +48,8 @@ public abstract class DefaultController<T extends DefaultModel> {
         }
         return element;
     }
-    /*получается если сделать этот метод тут, то он будет протектед, потому что только в наследниках он будет
-     использоваться, и тогда у нему не нужны тесты*/
+    /*Получается если сделать этот метод тут, то он будет протектед, потому что только в наследниках он будет
+     использоваться, и тогда к нему не нужны тесты. Просто у меня не было данного метода, а был отдельный класс
+     Validator, в котором как раз было два метода, и он как раз вызывался в методах create и update */
     protected abstract boolean isValid(T element);
-
 }

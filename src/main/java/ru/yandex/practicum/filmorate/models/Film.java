@@ -2,6 +2,9 @@ package ru.yandex.practicum.filmorate.models;
 
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -9,7 +12,12 @@ import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
 
-@Data
+//да, я читал про другие, но в ТЗ советовалось использовать анотацию @Data, хотя Марк рассказывал, что её не любят
+
+
+@Getter
+@Setter
+@EqualsAndHashCode(callSuper = true)
 public class Film extends DefaultModel{
     @NotEmpty
     private String name;

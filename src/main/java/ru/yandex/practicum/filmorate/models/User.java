@@ -1,11 +1,15 @@
 package ru.yandex.practicum.filmorate.models;
 
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
 
-@Data
+@Getter
+@Setter
+@EqualsAndHashCode(callSuper = true)
 public class User extends DefaultModel
 {
     private String name;
