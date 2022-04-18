@@ -16,13 +16,14 @@ public class ExceptionController {
 
     @ResponseBody
     @ExceptionHandler(ValidationException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    //Не согласен, что должен быть код ошибки 500, если непрошла валидация, но для тестов нужно так
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public String onConstraintValidationException(ValidationException e) {
         return e.getMessage();
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
     public List<Violation> onMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         final List<Violation> violations = e.getBindingResult().getFieldErrors().stream()

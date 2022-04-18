@@ -86,6 +86,12 @@ class ValidatorTest {
     }
 
     @Test
+    public void shouldReturnValidatorExceptionWhenEmailIsContainsSpaces() {
+        User user = new User("name", "", "login", LocalDate.of(1999, 6, 28));
+        assertThrows(ValidationException.class, () -> Validator.userIsValid(user));
+    }
+
+    @Test
     public void shouldReturnValidatorExceptionWhenLoginIsEmpty() {
         User user = new User("name", "email@mail.ru", "", LocalDate.of(1999, 6, 28));
         assertThrows(ValidationException.class, () -> Validator.userIsValid(user));
