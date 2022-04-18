@@ -11,7 +11,6 @@ import java.time.LocalDate;
 
 @Data
 public class Film extends DefaultModel{
-    private Integer id;
     @NotEmpty
     private String name;
     @Size(max = 200)
@@ -28,6 +27,8 @@ public class Film extends DefaultModel{
         this.releaseDate = releaseDate;
         this.duration = duration;
     }
+
+
 
 
 }

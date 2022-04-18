@@ -8,7 +8,6 @@ import java.time.LocalDate;
 @Data
 public class User extends DefaultModel
 {
-    private Integer id;
     private String name;
     @NotEmpty
     @Email

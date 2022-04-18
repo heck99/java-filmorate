@@ -6,5 +6,5 @@ import lombok.Setter;
 public abstract class DefaultModel {
     @Getter
     @Setter
-    private Integer id;
+    protected Integer id;
 }
