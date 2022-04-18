@@ -2,68 +2,49 @@ package ru.yandex.practicum.filmorate.controllers;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exceptions.UserDoesNotExistException;
-import ru.yandex.practicum.filmorate.functionals.Validator;
+import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.models.User;
 
-import javax.validation.Valid;
-import java.util.Collection;
-import java.util.HashMap;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 
 @Slf4j
 @RestController()
 @RequestMapping("/users")
-public class UserController {
+public class UserController extends DefaultController<User>{
 
-    HashMap<Integer, User> users = new HashMap<>();
-
-    @GetMapping()
-    public Collection<User> GetUsers() {
-        log.info("/GET");
-        return users.values();
-    }
-
-    @PostMapping
-    public User postUser(@Valid @RequestBody User user) {
-        log.info("/POST: " + user.toString());
-        /*возможно правильнее не кидать исключение в валидаторе, а получать результат false и в этом методе бросать
-        исключения, но я не совсем придумал, как тогда различать какое поле не прошло валидацию, был вариант создать
-        отдельно исключение для ошибки в логине пароле и пр. возможно так лучше*/
-        /*То что ниже было сделано для первой частизадания, которое без звёздочки, но когда я сделал задание со
-        звездочкой, то у меня не получилось сделать валидацию на дату релиза фильма с помощью антоаций, поэтому я решил
-         оставить обе валидации*/
-        Validator.userIsValid(user);
-        if(user.getName() == null || user.getName().isBlank()) {
-            user.setName(user.getLogin());
+    @Override
+    protected boolean isValid(User user) {
+        String email = user.getEmail();
+        if(!email.contains("@")) {
+            log.warn("Email does not match the pattern: " + email);
+            throw new ValidationException("Email does not match the pattern");
         }
-        /*Может не совсем корректно присваивать id через количество элементов в мапе, но так как у нас это временное
-        хранилеще, видимо, на 2 спринта и у нас нет эндпоинта для удаление пользователя, тогда должно работать верно*/
-        user.setId(users.size() + 1);
-        users.put(user.getId(), user);
-        return user;
-    }
-
-    @PutMapping
-    public User putUser(@Valid @RequestBody User userToUpdate) {
-        log.info("/PUT: " + userToUpdate.toString());
-        Validator.userIsValid(userToUpdate);
-        if(userToUpdate.getName().isBlank() || userToUpdate.getName() == null) {
-            userToUpdate.setName(userToUpdate.getLogin());
+        if(email.isBlank()) {
+            log.warn("Email is blank: " + email);
+            throw new ValidationException("Email is blank");
         }
-        if(userToUpdate.getId() != null) {
-            if(users.containsKey(userToUpdate.getId())) {
-                users.put(userToUpdate.getId(), userToUpdate);
-                log.info("User Info has been updated");
-            } else {
-                log.warn("\"User with id " + userToUpdate.getId() + " doesn't exist");
-                throw new UserDoesNotExistException("User with this id doesn't exist");
-            }
-        } else {
-            userToUpdate.setId(users.size() + 1);
-            users.put(userToUpdate.getId(), userToUpdate);
-            log.info("New user has been added: " + userToUpdate.toString());
+        String login = user.getLogin();
+        if(login.isBlank()) {
+            log.warn("Login is blank: " + login);
+            throw new ValidationException("Login is blank");
         }
-        return userToUpdate;
-    }
 
+        if(login.contains(" ")) {
+            log.warn("Login contains spaces: " + login);
+            throw new ValidationException("Login contains spaces");
+        }
+
+        LocalDate dateOfBirthday = user.getBirthday();
+        if(dateOfBirthday == null) {
+            log.warn("Date of Birthday in empty");
+            throw new ValidationException("Date of Birthday is empty");
+        }
+        if(dateOfBirthday.isAfter(LocalDate.now())) {
+            log.warn("Date of Birthday in future " + dateOfBirthday.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) + "now is: " + LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
+            throw new ValidationException("Date of Birthday in future");
+        }
+        return true;
+    }
 }

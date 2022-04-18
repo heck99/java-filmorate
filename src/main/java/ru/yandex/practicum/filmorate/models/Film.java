@@ -10,7 +10,7 @@ import javax.validation.constraints.Size;
 import java.time.LocalDate;
 
 @Data
-public class Film {
+public class Film extends DefaultModel{
     private Integer id;
     @NotEmpty
     private String name;
@@ -28,4 +28,6 @@ public class Film {
         this.releaseDate = releaseDate;
         this.duration = duration;
     }
+
+
 }

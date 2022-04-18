@@ -10,7 +10,7 @@ import java.time.format.DateTimeFormatter;
 @Slf4j
 public class Validator {
 
-    public static boolean userIsValid(User user) {
+    public static boolean IsValid(User user) {
         String email = user.getEmail();
         if(!email.contains("@")) {
             log.warn("Email does not match the pattern: " + email);
@@ -43,7 +43,7 @@ public class Validator {
         return true;
     }
 
-    public static boolean filmIsValid(Film film) {
+    public static boolean IsValid(Film film) {
         if(film.getName() == null || film.getName().isBlank()) {
             log.warn("Movie name is empty");
             throw new ValidationException("Movie name is empty");

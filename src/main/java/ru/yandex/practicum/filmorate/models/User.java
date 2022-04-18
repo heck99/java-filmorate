@@ -6,7 +6,7 @@ import javax.validation.constraints.*;
 import java.time.LocalDate;
 
 @Data
-public class User
+public class User extends DefaultModel
 {
     private Integer id;
     private String name;
