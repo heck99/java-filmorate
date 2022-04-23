@@ -17,14 +17,16 @@ public class UserController extends DefaultController<User>{
     @Override
     protected boolean isValid(User user) {
         String email = user.getEmail();
-        if(!email.contains("@")) {
-            log.warn("Email does not match the pattern: " + email);
-            throw new ValidationException("Email does not match the pattern");
-        }
         if(email.isBlank()) {
             log.warn("Email is blank: " + email);
             throw new ValidationException("Email is blank");
         }
+
+        if(!email.contains("@")) {
+            log.warn("Email does not match the pattern: " + email);
+            throw new ValidationException("Email does not match the pattern");
+        }
+
         String login = user.getLogin();
         if(login.isBlank()) {
             log.warn("Login is blank: " + login);
