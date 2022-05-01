@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.models;
+package ru.yandex.practicum.filmorate.model;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -9,5 +9,5 @@ import lombok.Setter;
 public abstract class DefaultModel {
     @Getter
     @Setter
-    protected Integer id;
+    protected Long id;
 }

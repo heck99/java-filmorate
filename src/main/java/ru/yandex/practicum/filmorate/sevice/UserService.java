@@ -1,18 +1,24 @@
-package ru.yandex.practicum.filmorate.controllers;
+package ru.yandex.practicum.filmorate.sevice;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exceptions.ValidationException;
-import ru.yandex.practicum.filmorate.models.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-
+@Service
 @Slf4j
-@RestController()
-@RequestMapping("/users")
-public class UserController extends DefaultController<User>{
+public class UserService extends ModelService<User, UserStorage> {
+
+    @Autowired
+    public UserService(UserStorage userStorage) {
+        this.storage = userStorage;
+    }
 
     @Override
     protected boolean isValid(User user) {

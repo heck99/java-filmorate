@@ -1,19 +1,24 @@
-package ru.yandex.practicum.filmorate.controllers;
+package ru.yandex.practicum.filmorate.sevice;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
-
-import ru.yandex.practicum.filmorate.exceptions.ValidationException;
-import ru.yandex.practicum.filmorate.models.Film;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-
+@Service
 @Slf4j
-@RestController
-@RequestMapping("/films")
-public class FilmController extends DefaultController<Film> {
+public class FilmService extends ModelService<Film, FilmStorage> {
+
+    @Autowired
+    public FilmService(FilmStorage filmStorage) {
+        this.storage = filmStorage;
+    }
+
     @Override
     protected boolean isValid(Film film) {
         if(film.getName() == null || film.getName().isBlank()) {
