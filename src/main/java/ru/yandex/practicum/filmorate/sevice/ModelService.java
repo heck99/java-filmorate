@@ -9,6 +9,7 @@ import java.util.Collection;
 
 @Slf4j
 public abstract class ModelService<V extends DefaultModel, T extends ModelStorage<V>> {
+
     T storage;
 
     public V create(V element) {

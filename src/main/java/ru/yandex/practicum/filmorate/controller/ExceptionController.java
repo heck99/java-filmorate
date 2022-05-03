@@ -2,23 +2,29 @@ package ru.yandex.practicum.filmorate.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exception.FriendAlreadyExistsException;
+import ru.yandex.practicum.filmorate.exception.NoFriendException;
+import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-@ControllerAdvice
+@RestControllerAdvice
 public class ExceptionController {
 
     @ResponseBody
-    @ExceptionHandler(ValidationException.class)
-    //Не согласен, что должен быть код ошибки 500, если непрошла валидация, но для тестов нужно так
+    @ExceptionHandler({ValidationException.class, FriendAlreadyExistsException.class})
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public String onConstraintValidationException(ValidationException e) {
+    public String onInternalServerError(RuntimeException e) {
+        return e.getMessage();
+    }
+
+    @ResponseBody
+    @ExceptionHandler({NoFriendException.class, UserNotFoundException.class})
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public String onNotFoundError(RuntimeException e) {
         return e.getMessage();
     }
 

@@ -5,11 +5,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Collection;
 
 @Service
 @Slf4j
@@ -17,7 +17,28 @@ public class UserService extends ModelService<User, UserStorage> {
 
     @Autowired
     public UserService(UserStorage userStorage) {
+        log.info("Обращаемся к хранилищу");
         this.storage = userStorage;
+    }
+
+    public void addFriend(Long id, Long friendId) {
+        log.info("Обращаемся к хранилищу");
+        storage.addFriend(id, friendId);
+    }
+
+    public Collection<User> getFriends(Long id) {
+        log.info("Обращаемся к хранилищу");
+        return storage.getFriends(id);
+    }
+
+    public void deleteFriend(Long id, Long delId) {
+        log.info("Обращаемся к хранилищу");
+        storage.deleteFriend(id, delId);
+    }
+
+    public Collection<User> getCommonFriends(Long firstId, Long secondId) {
+        log.info("Обращаемся к хранилищу");
+        return storage.getCommonFriends(firstId, secondId);
     }
 
     @Override

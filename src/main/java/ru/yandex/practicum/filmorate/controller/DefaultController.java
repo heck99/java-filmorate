@@ -1,15 +1,15 @@
 package ru.yandex.practicum.filmorate.controller;
 
-        import lombok.extern.slf4j.Slf4j;
-        import org.springframework.beans.factory.annotation.Autowired;
-        import org.springframework.web.bind.annotation.*;
-        import ru.yandex.practicum.filmorate.exception.DataDoesNotExistsException;
-        import ru.yandex.practicum.filmorate.model.DefaultModel;
-        import ru.yandex.practicum.filmorate.sevice.ModelService;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.model.DefaultModel;
+import ru.yandex.practicum.filmorate.sevice.ModelService;
 
-        import javax.validation.Valid;
-        import java.util.Collection;
-        import java.util.HashMap;
+import javax.validation.Valid;
+import java.util.Collection;
+import java.util.logging.Logger;
 
 @Slf4j
 public abstract class DefaultController<V extends ModelService, T extends DefaultModel> {
@@ -21,6 +21,12 @@ public abstract class DefaultController<V extends ModelService, T extends Defaul
     public Collection<T> GetData() {
         log.info("/GET");
         return service.getAll();
+    }
+
+    @GetMapping("/{id}")
+    public T GetElement(@PathVariable Long id) {
+        log.info("/GET /{" + id + "}");
+        return (T) service.getElement(id);
     }
 
     @PostMapping
