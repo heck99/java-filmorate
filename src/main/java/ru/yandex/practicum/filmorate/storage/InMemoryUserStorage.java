@@ -7,6 +7,7 @@ import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class InMemoryUserStorage implements UserStorage{
@@ -24,6 +25,7 @@ public class InMemoryUserStorage implements UserStorage{
     public User create(User element) {
         element.setId(Long.valueOf(users.size() + 1));
         users.put(element.getId(), element);
+        friends.put(element.getId(), new HashSet<>());
         return element;
     }
 
@@ -52,19 +54,13 @@ public class InMemoryUserStorage implements UserStorage{
     @Override
     public void addFriend(Long firstId, Long secondId) {
         //проверяем существование пользователей
-        if(!users.containsKey(firstId)) {
+        if(!friends.containsKey(firstId)) {
             throw new UserNotFoundException(String.format("Пользователь c id: %d не найден", firstId));
         }
-        if(!users.containsKey(secondId)) {
+        if(!friends.containsKey(secondId)) {
             throw new UserNotFoundException(String.format("Пользователь c id: %d не найден", secondId));
         }
-        //если у пользователей ещё нет друзей создаём для них сет в мапе
-        if(!friends.containsKey(firstId)) {
-            friends.put(firstId, new HashSet<>());
-        }
-        if(!friends.containsKey(secondId)) {
-            friends.put(secondId, new HashSet<>());
-        }
+
         //добавляем в друзья, если уже в друзьях то кидаем исключение
         boolean answer = friends.get(firstId).add(secondId);
         if(!answer) {
@@ -78,24 +74,19 @@ public class InMemoryUserStorage implements UserStorage{
 
     @Override
     public Collection<User> getFriends(Long id) {
-        if(!users.containsKey(id)) {
+        if(!friends.containsKey(id)) {
             throw new UserNotFoundException(String.format("Пользователь c id: %d не найден", id));
         }
-        Collection<User> userFriends = new ArrayList<>();
-        for (Long friendsId : friends.get(id)) {
-         userFriends.add(users.get(friendsId));
-        }
-        return userFriends;
+        return friends.get(id).stream().map(t -> users.get(t)).collect(Collectors.toList());
+
     }
 
     @Override
     public void deleteFriend(Long id, Long delId) {
-        if(!users.containsKey(id)) {
+        if(!friends.containsKey(id)) {
             throw new UserNotFoundException(String.format("Пользователь c id: %d не найден", id));
         }
-        if(!friends.containsKey(id)) {
-            throw new NoFriendException(String.format("У пользователя с id = %id нет друзей", id));
-        }
+
         Set<Long> friendsId = friends.get(id);
         if(!friendsId.remove(delId)) {
             throw new NoFriendException(String.format("У пользователя с id = %d1 нет друга с id = %d2", id, delId));

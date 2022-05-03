@@ -11,8 +11,6 @@ import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
 
-//да, я читал про другие, но в ТЗ советовалось использовать анотацию @Data, хотя Марк рассказывал, что её не любят
-
 
 @Getter
 @Setter
@@ -20,7 +18,7 @@ import java.time.LocalDate;
 public class Film extends DefaultModel{
     @NotEmpty
     private String name;
-    @Size(max = 200)
+    @Size(min = 1, max = 200)
     private String description;
     @NotNull
     private LocalDate releaseDate;
@@ -34,8 +32,4 @@ public class Film extends DefaultModel{
         this.releaseDate = releaseDate;
         this.duration = duration;
     }
-
-
-
-
 }

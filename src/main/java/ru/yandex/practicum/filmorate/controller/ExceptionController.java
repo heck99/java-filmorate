@@ -3,10 +3,7 @@ package ru.yandex.practicum.filmorate.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.FriendAlreadyExistsException;
-import ru.yandex.practicum.filmorate.exception.NoFriendException;
-import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.exception.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,18 +12,19 @@ import java.util.stream.Collectors;
 public class ExceptionController {
 
     @ResponseBody
-    @ExceptionHandler({ValidationException.class, FriendAlreadyExistsException.class})
+    @ExceptionHandler({ValidationException.class, FriendAlreadyExistsException.class, FilmAlreadyLiked.class})
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public String onInternalServerError(RuntimeException e) {
         return e.getMessage();
     }
 
     @ResponseBody
-    @ExceptionHandler({NoFriendException.class, UserNotFoundException.class})
+    @ExceptionHandler({FilmNotFoundException.class, UserNotFoundException.class, NoFriendException.class, NoLikeException.class, DataDoesNotExistsException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public String onNotFoundError(RuntimeException e) {
         return e.getMessage();
     }
+
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

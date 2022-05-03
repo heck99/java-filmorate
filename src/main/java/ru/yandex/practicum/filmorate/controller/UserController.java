@@ -13,6 +13,10 @@ import java.util.Collection;
 @RequestMapping("/users")
 public class UserController extends DefaultController<UserService, User>{
 
+    public UserController(UserService service) {
+        super(service);
+    }
+
     @PutMapping("/{id}/friends/{friendId}")
     public void addFriends(@PathVariable Long id, @PathVariable Long friendId) {
         log.info(String.format("/PUT /users/%d1/friends/%d2", id, friendId));

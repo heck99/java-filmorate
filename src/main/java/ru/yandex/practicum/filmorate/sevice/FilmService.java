@@ -6,17 +6,41 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Collection;
 
 @Service
 @Slf4j
 public class FilmService extends ModelService<Film, FilmStorage> {
 
+    UserStorage userStorage;
+
     @Autowired
-    public FilmService(FilmStorage filmStorage) {
+    public FilmService(FilmStorage filmStorage, UserStorage userStorage ) {
         this.storage = filmStorage;
+        this.userStorage = userStorage;
+    }
+
+    public void addLike(Long filmId, Long userId) {
+        log.info(String.format("Проверяем наличие пользователя с id = %d", userId));
+        userStorage.getElement(userId);
+        log.info(String.format("Пользователь с  id = %d существует, обращаемся к хранилищу фильмов", userId));
+        storage.addLike(filmId, userId);
+    }
+
+    public void deleteLike(Long filmId, Long userId) {
+        log.info(String.format("Проверяем наличие пользователя с id = %d", userId));
+        userStorage.getElement(userId);
+        log.info(String.format("Пользователь с  id = %d существует, обращаемся к хранилищу фильмов", userId));
+        storage.deleteLike(filmId, userId);
+    }
+
+    public Collection<Film> getPopular(int count) {
+        log.info("Обращаемся к хранилищу фильмов");
+        return storage.getPopular(count);
     }
 
     @Override
