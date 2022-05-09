@@ -1,26 +1,30 @@
-package ru.yandex.practicum.filmorate.controllers;
+package ru.yandex.practicum.filmorate.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import ru.yandex.practicum.filmorate.exceptions.ValidationException;
+import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exception.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-@ControllerAdvice
+@RestControllerAdvice
 public class ExceptionController {
 
     @ResponseBody
-    @ExceptionHandler(ValidationException.class)
-    //Не согласен, что должен быть код ошибки 500, если непрошла валидация, но для тестов нужно так
+    @ExceptionHandler({ValidationException.class, FriendAlreadyExistsException.class, FilmAlreadyLiked.class})
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public String onConstraintValidationException(ValidationException e) {
+    public String onInternalServerError(RuntimeException e) {
         return e.getMessage();
     }
+
+    @ResponseBody
+    @ExceptionHandler({FilmNotFoundException.class, UserNotFoundException.class, NoFriendException.class, NoLikeException.class, DataDoesNotExistsException.class})
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public String onNotFoundError(RuntimeException e) {
+        return e.getMessage();
+    }
+
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
