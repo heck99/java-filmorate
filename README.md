@@ -20,7 +20,7 @@
 Запись a-b означает, что a запрашивает дружбу у b
 
 # Примеры запросов к БД
-## Поиск друзей пользователя с id =1
+## Поиск друзей пользователя с id =1  
 SELECT  
 CASE WHEN first_user = 1 THEN second_user  
 WHEN second_user = 1 THEN first_user  
@@ -28,7 +28,7 @@ END AS friends
 FROM friends  
 WHERE first_user = 1 OR second_user = 1  
 ---
-## Общие друзья пользователей с id = 1,4
+## Общие друзья пользователей с id = 1,4  
 SELECT  
 f_F.friends  
 FROM (SELECT  
@@ -38,20 +38,19 @@ END AS friends
 FROM friends  
 WHERE first_user = 1 OR second_user = 1) AS f_f  
 LEFT JOIN friends AS f ON (f.first_user = f_f.friends OR f.second_user = f_f.friends)  
-WHERE f.first_user = 4 OR f.second_user = 4  
-
+WHERE f.first_user = 4 OR f.second_user = 4 
 ---
-## Исходящие заявки в друзья от пользователя 1
+## Исходящие заявки в друзья от пользователя 1  
 SELECT potential_friend  
 FROM friends_request  
 WHERE requesting_user = 1  
 ---
-## Входящие заявки в друзья пользователя с id = 3
+## Входящие заявки в друзья пользователя с id = 3  
 SELECT requesting_user  
 FROM friends_request  
 WHERE potential_friend = 3  
 ---
-## Топ 10 фильмов по лайкам
+## Топ 10 фильмов по лайкам  
 SELECT film_id  
 FROM likes  
 GROUP BY film_id  
