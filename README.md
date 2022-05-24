@@ -21,34 +21,44 @@
 
 # Примеры запросов к БД
 ## Поиск друзей пользователя с id =1  
-SELECT  
-CASE WHEN first_user = 1 THEN second_user  
-WHEN second_user = 1 THEN first_user  
-END AS friends  
-FROM friends  
-WHERE first_user = 1 OR second_user = 1  
+SELECT
+CASE WHEN interrogator = 1 THEN defendant
+WHEN defendant = 1 THEN interrogator
+END AS friends
+FROM friends AS f
+JOIN friendship_statuses AS s ON f.status = s.id
+WHERE (f.interrogator = 1 OR f.defendant = 1) AND s.name = 'accept'
+
 ---
 ## Общие друзья пользователей с id = 1,4  
 SELECT  
-f_F.friends  
-FROM (SELECT  
-CASE WHEN first_user = 1 THEN second_user  
-WHEN second_user = 1 THEN first_user  
-END AS friends  
-FROM friends  
-WHERE first_user = 1 OR second_user = 1) AS f_f  
-LEFT JOIN friends AS f ON (f.first_user = f_f.friends OR f.second_user = f_f.friends)  
-WHERE f.first_user = 4 OR f.second_user = 4 
+SELECT
+f_f.friends
+FROM (SELECT
+CASE WHEN interrogator = 1 THEN defendant
+WHEN defendant = 1 THEN interrogator
+END AS friends
+FROM friends AS f
+JOIN friendship_statuses AS s ON f.status = s.id
+WHERE (f.interrogator = 1 OR f.defendant = 1) AND s.name = 'accept') AS f_f
+LEFT JOIN friends AS f ON (f.interrogator = f_f.friends OR f.defendant = f_f.friends)
+LEFT JOIN friendship_statuses AS s ON f.status = s.id
+WHERE (f.interrogator = 4 OR f.defendant = 4)  AND s.name = 'accept'
+
 ---
 ## Исходящие заявки в друзья от пользователя 1  
-SELECT potential_friend  
-FROM friends_request  
-WHERE requesting_user = 1  
+SELECT f.defendant
+FROM friends AS f
+JOIN friendship_statuses AS s ON f.status=s.id
+WHERE f.interrogator = 1 AND s.name = 'request'
+
 ---
 ## Входящие заявки в друзья пользователя с id = 3  
-SELECT requesting_user  
-FROM friends_request  
-WHERE potential_friend = 3  
+SELECT f.interrogator
+FROM friends AS f
+JOIN friendship_statuses AS s ON f.status=s.id
+WHERE f.defendant = 4 AND s.name = 'request'
+
 ---
 ## Топ 10 фильмов по лайкам  
 SELECT film_id  
