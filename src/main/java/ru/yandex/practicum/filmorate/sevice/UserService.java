@@ -41,6 +41,7 @@ public class UserService extends ModelService<User, UserStorage> {
         return storage.getCommonFriends(firstId, secondId);
     }
 
+
     @Override
     protected boolean isValid(User user) {
         String email = user.getEmail();
@@ -74,6 +75,11 @@ public class UserService extends ModelService<User, UserStorage> {
             log.warn("Date of Birthday in future " + dateOfBirthday.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) + "now is: " + LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
             throw new ValidationException("Date of Birthday in future");
         }
+
+        if(user.getName().isEmpty()) {
+            user.setName(user.getLogin());
+        }
+
         return true;
     }
 }
