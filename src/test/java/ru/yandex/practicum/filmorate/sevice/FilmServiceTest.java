@@ -2,11 +2,9 @@ package ru.yandex.practicum.filmorate.sevice;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.sevice.FilmService;
-import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storage.impl.InMemoryFilmStorage;
 
 import java.time.LocalDate;
 

@@ -28,4 +28,16 @@ public class User extends DefaultModel
         this.login = login;
         this.birthday = birthday;
     }
+
+    public User(Long id, String name, String email, String login, LocalDate birthday) {
+        super(id);
+        this.name = name;
+        this.email = email;
+        this.login = login;
+        this.birthday = birthday;
+    }
+
+    public User() {
+    }
+
 }

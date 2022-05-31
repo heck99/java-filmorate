@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.sevice;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
@@ -16,8 +17,7 @@ import java.util.Collection;
 public class UserService extends ModelService<User, UserStorage> {
 
     @Autowired
-    public UserService(UserStorage userStorage) {
-        log.info("Обращаемся к хранилищу");
+    public UserService(@Qualifier("UserDbStorage") UserStorage userStorage) {
         this.storage = userStorage;
     }
 

@@ -2,7 +2,9 @@ package ru.yandex.practicum.filmorate.sevice;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
@@ -19,21 +21,26 @@ public class FilmService extends ModelService<Film, FilmStorage> {
     UserStorage userStorage;
 
     @Autowired
-    public FilmService(FilmStorage filmStorage, UserStorage userStorage ) {
+    public FilmService(FilmStorage filmStorage, @Qualifier("UserDbStorage") UserStorage userStorage ) {
         this.storage = filmStorage;
         this.userStorage = userStorage;
     }
 
     public void addLike(Long filmId, Long userId) {
         log.info(String.format("Проверяем наличие пользователя с id = %d", userId));
-        userStorage.getElement(userId);
+
+        if(userStorage.getElement(userId).isEmpty()) {
+            throw new UserNotFoundException(String.format("Пользователь с  id = %d не существует", userId));
+        }
         log.info(String.format("Пользователь с  id = %d существует, обращаемся к хранилищу фильмов", userId));
         storage.addLike(filmId, userId);
     }
 
     public void deleteLike(Long filmId, Long userId) {
         log.info(String.format("Проверяем наличие пользователя с id = %d", userId));
-        userStorage.getElement(userId);
+        if(userStorage.getElement(userId).isEmpty()) {
+            throw new UserNotFoundException(String.format("Пользователь с  id = %d не существует", userId));
+        }
         log.info(String.format("Пользователь с  id = %d существует, обращаемся к хранилищу фильмов", userId));
         storage.deleteLike(filmId, userId);
     }

@@ -10,4 +10,11 @@ public abstract class DefaultModel {
     @Getter
     @Setter
     protected Long id;
+
+    public DefaultModel() {
+    }
+
+    public DefaultModel(Long id) {
+        this.id = id;
+    }
 }

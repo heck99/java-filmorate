@@ -6,6 +6,7 @@ import ru.yandex.practicum.filmorate.model.DefaultModel;
 import ru.yandex.practicum.filmorate.storage.ModelStorage;
 
 import java.util.Collection;
+import java.util.Optional;
 
 @Slf4j
 public abstract class ModelService<V extends DefaultModel, T extends ModelStorage<V>> {
@@ -20,7 +21,11 @@ public abstract class ModelService<V extends DefaultModel, T extends ModelStorag
     }
 
     public V getElement(Long id) {
-        return storage.getElement(id);
+        Optional<V> element = storage.getElement(id);
+        if(element.isEmpty()) {
+            throw new DataDoesNotExistsException(String.format("Объект с id = %d не найден", id));
+        }
+        return element.get();
     }
 
     public Collection<V> getAll() {
@@ -28,11 +33,13 @@ public abstract class ModelService<V extends DefaultModel, T extends ModelStorag
         return storage.getAll();
     }
 
+
+    //TODO:разобраться с фигнёй
     public V putElement(V element) {
         log.info("обращаемся к хранилищу с элементом: " + element.toString());
         isValid(element);
         if(element.getId() != null) {
-            if(storage.getElement(element.getId()) != null) {
+            if(storage.getElement(element.getId()).isPresent()) {
                 storage.update(element);
                 log.info("Data info has been updated");
             } else {
@@ -41,7 +48,7 @@ public abstract class ModelService<V extends DefaultModel, T extends ModelStorag
             }
         } else {
             storage.create(element);
-            log.info("New data has been added: " + element.toString());
+            log.info("New data has been added: " + element);
         }
         return element;
     }

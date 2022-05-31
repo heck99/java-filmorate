@@ -1,16 +1,17 @@
-package ru.yandex.practicum.filmorate.storage;
+package ru.yandex.practicum.filmorate.storage.impl;
 
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.FriendAlreadyExistsException;
 import ru.yandex.practicum.filmorate.exception.NoFriendException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
-public class InMemoryUserStorage implements UserStorage{
+public class InMemoryUserStorage implements UserStorage {
 
     Map<Long, User> users;
 
@@ -23,7 +24,7 @@ public class InMemoryUserStorage implements UserStorage{
 
     @Override
     public User create(User element) {
-        element.setId(Long.valueOf(users.size() + 1));
+        element.setId((long) (users.size() + 1));
         users.put(element.getId(), element);
         friends.put(element.getId(), new HashSet<>());
         return element;
@@ -38,12 +39,12 @@ public class InMemoryUserStorage implements UserStorage{
     }
 
     @Override
-    public User getElement(Long id) {
+    public Optional<User> getElement(Long id) {
         User user = users.get(id);
         if(user == null) {
-            throw new UserNotFoundException(String.format("Пользователь c id: %s не найден", id));
+            return Optional.empty();
         }
-        return user;
+        return Optional.of(user);
     }
 
     @Override
