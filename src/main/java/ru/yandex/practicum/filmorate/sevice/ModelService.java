@@ -16,8 +16,8 @@ public abstract class ModelService<V extends DefaultModel, T extends ModelStorag
     public V create(V element) {
         isValid(element);
         log.info("обращаемся к хранилищу" + element.toString());
-        storage.create(element);
-        return element;
+        return storage.create(element);
+
     }
 
     public V getElement(Long id) {
@@ -33,24 +33,23 @@ public abstract class ModelService<V extends DefaultModel, T extends ModelStorag
         return storage.getAll();
     }
 
-
-    //TODO:разобраться с фигнёй
     public V putElement(V element) {
+        V newElement;
         log.info("обращаемся к хранилищу с элементом: " + element.toString());
         isValid(element);
         if(element.getId() != null) {
             if(storage.getElement(element.getId()).isPresent()) {
-                storage.update(element);
+                newElement = storage.update(element);
                 log.info("Data info has been updated");
             } else {
                 log.warn("Data with id " + element.getId() + " doesn't exist");
-                throw new DataDoesNotExistsException("Data with this id doesn't exist");
+                throw new DataDoesNotExistsException(String.format("Data with id = %d doesn't exist", element.getId()));
             }
         } else {
-            storage.create(element);
+            newElement = storage.create(element);
             log.info("New data has been added: " + element);
         }
-        return element;
+        return newElement;
     }
 
     protected abstract boolean isValid(V element);

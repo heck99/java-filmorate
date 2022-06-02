@@ -21,7 +21,7 @@ create table if not exists MPA
 (
     MPA_ID      INTEGER auto_increment,
     NAME        CHARACTER VARYING,
-    DESCRIPTION CHARACTER LARGE OBJECT,
+    DESCRIPTION CHARACTER VARYING,
     constraint MPA_PK
         primary key (MPA_ID)
 );
@@ -32,7 +32,7 @@ create table if not exists FILMS
 (
     FILM_ID      INTEGER auto_increment,
     NAME         CHARACTER VARYING,
-    DESCRIPTION  CHARACTER LARGE OBJECT,
+    DESCRIPTION  CHARACTER VARYING,
     RELEASE_DATE DATE,
     DURATION     INTEGER,
     MPA_ID       INTEGER,

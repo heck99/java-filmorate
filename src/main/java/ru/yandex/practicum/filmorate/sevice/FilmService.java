@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
+import ru.yandex.practicum.filmorate.exception.DataDoesNotExistsException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
@@ -21,27 +21,38 @@ public class FilmService extends ModelService<Film, FilmStorage> {
     UserStorage userStorage;
 
     @Autowired
-    public FilmService(FilmStorage filmStorage, @Qualifier("UserDbStorage") UserStorage userStorage ) {
+    public FilmService(@Qualifier("FilmDbStorage") FilmStorage filmStorage, @Qualifier("UserDbStorage") UserStorage userStorage ) {
         this.storage = filmStorage;
         this.userStorage = userStorage;
     }
 
     public void addLike(Long filmId, Long userId) {
-        log.info(String.format("Проверяем наличие пользователя с id = %d", userId));
+        log.info(String.format("Проверяем наличие пользователя с id = %d и фильма с id = %d", userId, filmId));
 
         if(userStorage.getElement(userId).isEmpty()) {
-            throw new UserNotFoundException(String.format("Пользователь с  id = %d не существует", userId));
+            log.info("Пользователь с  id = {} не найден", userId);
+            throw new DataDoesNotExistsException(String.format("Пользователь с  id = %d не найден", userId));
         }
-        log.info(String.format("Пользователь с  id = %d существует, обращаемся к хранилищу фильмов", userId));
+        if(storage.getElement(filmId).isEmpty()) {
+            log.info("Фильм с  id = {} не не найден", filmId);
+            throw new DataDoesNotExistsException(String.format("Фильм с  id = %d не найден", filmId));
+        }
+
+        log.info(String.format("Пользователь с  id = %d и фильм с id = %d существуют, обращаемся к хранилищу фильмов", userId, filmId));
         storage.addLike(filmId, userId);
     }
 
     public void deleteLike(Long filmId, Long userId) {
-        log.info(String.format("Проверяем наличие пользователя с id = %d", userId));
+        log.info(String.format("Проверяем наличие пользователя с id = %d и фильма с id = %d", userId, filmId));
         if(userStorage.getElement(userId).isEmpty()) {
-            throw new UserNotFoundException(String.format("Пользователь с  id = %d не существует", userId));
+            log.info("Пользователь с  id = {} не найден", userId);
+            throw new DataDoesNotExistsException(String.format("Пользователь с  id = %d не найден", userId));
         }
-        log.info(String.format("Пользователь с  id = %d существует, обращаемся к хранилищу фильмов", userId));
+        if(storage.getElement(filmId).isEmpty()) {
+            log.info("Фильм с  id = {} не не найден", filmId);
+            throw new DataDoesNotExistsException(String.format("Фильм с  id = %d не найден", filmId));
+        }
+        log.info(String.format("Пользователь с  id = %d и фильм с id = %d существуют, обращаемся к хранилищу фильмов", userId, filmId));
         storage.deleteLike(filmId, userId);
     }
 

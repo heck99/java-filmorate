@@ -1,9 +1,9 @@
 package ru.yandex.practicum.filmorate.storage.impl;
 
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.DataDoesNotExistsException;
 import ru.yandex.practicum.filmorate.exception.FriendAlreadyExistsException;
 import ru.yandex.practicum.filmorate.exception.NoFriendException;
-import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
@@ -56,10 +56,10 @@ public class InMemoryUserStorage implements UserStorage {
     public void addFriend(Long firstId, Long secondId) {
         //проверяем существование пользователей
         if(!friends.containsKey(firstId)) {
-            throw new UserNotFoundException(String.format("Пользователь c id: %d не найден", firstId));
+            throw new DataDoesNotExistsException(String.format("Пользователь c id: %d не найден", firstId));
         }
         if(!friends.containsKey(secondId)) {
-            throw new UserNotFoundException(String.format("Пользователь c id: %d не найден", secondId));
+            throw new DataDoesNotExistsException(String.format("Пользователь c id: %d не найден", secondId));
         }
 
         //добавляем в друзья, если уже в друзьях то кидаем исключение
@@ -76,7 +76,7 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public Collection<User> getFriends(Long id) {
         if(!friends.containsKey(id)) {
-            throw new UserNotFoundException(String.format("Пользователь c id: %d не найден", id));
+            throw new DataDoesNotExistsException(String.format("Пользователь c id: %d не найден", id));
         }
         return friends.get(id).stream().map(t -> users.get(t)).collect(Collectors.toList());
 
@@ -85,7 +85,7 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public void deleteFriend(Long id, Long delId) {
         if(!friends.containsKey(id)) {
-            throw new UserNotFoundException(String.format("Пользователь c id: %d не найден", id));
+            throw new DataDoesNotExistsException(String.format("Пользователь c id: %d не найден", id));
         }
 
         Set<Long> friendsId = friends.get(id);
@@ -97,10 +97,10 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public Collection<User> getCommonFriends(Long firstId, Long secondId) {
         if(!users.containsKey(firstId)) {
-            throw new UserNotFoundException(String.format("Пользователь c id: %d не найден", firstId));
+            throw new DataDoesNotExistsException(String.format("Пользователь c id: %d не найден", firstId));
         }
         if(!users.containsKey(secondId)) {
-            throw new UserNotFoundException(String.format("Пользователь c id: %d не найден", secondId));
+            throw new DataDoesNotExistsException(String.format("Пользователь c id: %d не найден", secondId));
         }
 
         //если хотя бы у одного пользователя нет друзей, то и пересечение будет пустым

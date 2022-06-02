@@ -20,7 +20,7 @@ public class ExceptionController {
     }
 
     @ResponseBody
-    @ExceptionHandler({FilmNotFoundException.class, UserNotFoundException.class, NoFriendException.class, NoLikeException.class, DataDoesNotExistsException.class})
+    @ExceptionHandler({ NoFriendException.class, NoLikeException.class, DataDoesNotExistsException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public String onNotFoundError(RuntimeException e) {
         return e.getMessage();

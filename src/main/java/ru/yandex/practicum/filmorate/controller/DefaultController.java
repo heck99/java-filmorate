@@ -11,8 +11,6 @@ import java.util.Collection;
 
 @Slf4j
 public abstract class DefaultController<V extends ModelService, T extends DefaultModel> {
-
-
     V service;
 
     public DefaultController(V service) {
@@ -34,15 +32,13 @@ public abstract class DefaultController<V extends ModelService, T extends Defaul
     @PostMapping
     public T createData(@Valid @RequestBody T element) {
         log.info("/POST: " + element.toString());
-        service.create(element);
-        return element;
+        return (T) service.create(element);
     }
 
     @PutMapping
     public T updateData (@Valid @RequestBody T element) {
         log.info("/PUT: " + element.toString());
-        service.putElement(element);
-        return element;
+        return (T) service.putElement(element);
     }
 
 }
