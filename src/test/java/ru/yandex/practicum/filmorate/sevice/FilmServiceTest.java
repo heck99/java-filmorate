@@ -13,8 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class FilmServiceTest {
 
-
-    FilmService filmService = new FilmService(new InMemoryFilmStorage(), null);
+    FilmService filmService = new FilmService(new InMemoryFilmStorage(), null, null);
 
     @Test
     public void shouldReturnTrueWhenFilmDataIsCorrect() {

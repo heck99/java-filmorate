@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class UserServiceTest {
 
 
-    UserService userService = new UserService(new InMemoryUserStorage());
+    UserService userService = new UserService(new InMemoryUserStorage(), null);
 
     @Test
     public void shouldReturnTrueWhenUserDataIsCorrect() {

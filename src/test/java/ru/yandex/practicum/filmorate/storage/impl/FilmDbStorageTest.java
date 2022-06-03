@@ -85,34 +85,4 @@ public class FilmDbStorageTest {
         assertThat(populars).element(0).hasFieldOrPropertyWithValue("id", 3L);
     }
 
-    @Test
-    public void testAddLike() {
-        Collection<Film> populars = filmStorage.getPopular(3);
-        assertThat(populars).element(0).hasFieldOrPropertyWithValue("id", 3L);
-        assertThat(populars).element(1).hasFieldOrPropertyWithValue("id", 2L);
-        assertThat(populars).element(2).hasFieldOrPropertyWithValue("id", 1L);
-        filmStorage.addLike(1L, 2L);
-        filmStorage.addLike(1L, 3L);
-        filmStorage.addLike(1L, 4L);
-        populars = filmStorage.getPopular(3);
-        assertThat(populars).element(0).hasFieldOrPropertyWithValue("id", 1L);
-        assertThat(populars).element(1).hasFieldOrPropertyWithValue("id", 3L);
-        assertThat(populars).element(2).hasFieldOrPropertyWithValue("id", 2L);
-    }
-
-    @Test
-    public void testDeleteLike() {
-        Collection<Film> populars = filmStorage.getPopular(3);
-        assertThat(populars).element(0).hasFieldOrPropertyWithValue("id", 3L);
-        assertThat(populars).element(1).hasFieldOrPropertyWithValue("id", 2L);
-        assertThat(populars).element(2).hasFieldOrPropertyWithValue("id", 1L);
-        filmStorage.deleteLike(3L, 1L);
-        filmStorage.deleteLike(3L, 2L);
-        filmStorage.deleteLike(3L, 3L);
-        populars = filmStorage.getPopular(3);
-        assertThat(populars).element(0).hasFieldOrPropertyWithValue("id", 2L);
-        assertThat(populars).element(1).hasFieldOrPropertyWithValue("id", 1L);
-        assertThat(populars).element(2).hasFieldOrPropertyWithValue("id", 3L);
-    }
-
 }

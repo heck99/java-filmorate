@@ -5,13 +5,14 @@ import ru.yandex.practicum.filmorate.exception.DataDoesNotExistsException;
 import ru.yandex.practicum.filmorate.exception.FriendAlreadyExistsException;
 import ru.yandex.practicum.filmorate.exception.NoFriendException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.FriendStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
-public class InMemoryUserStorage implements UserStorage {
+public class InMemoryUserStorage implements UserStorage, FriendStorage {
 
     Map<Long, User> users;
 

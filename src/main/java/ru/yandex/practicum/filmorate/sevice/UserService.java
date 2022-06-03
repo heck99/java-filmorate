@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.DataDoesNotExistsException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.FriendStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.time.LocalDate;
@@ -17,9 +18,13 @@ import java.util.Collection;
 @Slf4j
 public class UserService extends ModelService<User, UserStorage> {
 
+    FriendStorage friendStorage;
+
     @Autowired
-    public UserService(@Qualifier("UserDbStorage") UserStorage userStorage) {
+    public UserService(@Qualifier("UserDbStorage") UserStorage userStorage,
+                       @Qualifier("FriendDbStorage") FriendStorage friendStorage) {
         this.storage = userStorage;
+        this.friendStorage = friendStorage;
     }
 
     public void addFriend(Long id, Long friendId) {
@@ -33,7 +38,7 @@ public class UserService extends ModelService<User, UserStorage> {
             throw new DataDoesNotExistsException(String.format("Пользователь с  id = %d не найден", friendId));
         }
         log.info("Обращаемся к хранилищу");
-        storage.addFriend(id, friendId);
+        friendStorage.addFriend(id, friendId);
     }
 
     public Collection<User> getFriends(Long id) {
@@ -52,7 +57,7 @@ public class UserService extends ModelService<User, UserStorage> {
             throw new DataDoesNotExistsException(String.format("Пользователь с  id = %d не найден", delId));
         }
         log.info("Обращаемся к хранилищу");
-        storage.deleteFriend(id, delId);
+        friendStorage.deleteFriend(id, delId);
     }
 
     public Collection<User> getCommonFriends(Long firstId, Long secondId) {

@@ -66,30 +66,6 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public void addFriend(Long interrogator, Long defendant) {
-        String sqlRequest = "select f_s.name from FRIENDSHIP_STATUS as f_s JOIN FRIENDS as f " +
-                "on f_s.FRIENDSHIP_STATUS_ID = F.FRIENDSHIP_STATUS_ID " +
-                "where (f.DEFENDANT_ID = ? and f.INTERROGATOR_ID = ?) OR (f.DEFENDANT_ID = ? and f.INTERROGATOR_ID = ?)";
-        SqlRowSet rs = jdbcTemplate.queryForRowSet(sqlRequest, interrogator, defendant, defendant, interrogator);
-        if (rs.next()){
-            String friendshipStatus = rs.getString("name");
-            if(friendshipStatus.equals("request")){
-                String sqlRequest3 = "UPDATE FRIENDS SET FRIENDSHIP_STATUS_ID = (SELECT FRIENDSHIP_STATUS_ID" +
-                        " FROM FRIENDSHIP_STATUS WHERE NAME = 'accept' LIMIT 1) WHERE INTERROGATOR_ID = ? AND DEFENDANT_ID = ?";
-                jdbcTemplate.update(sqlRequest3);
-                log.info("Пользователь с id = {} принял запрос в друзья от пользователя с id = {}", interrogator, defendant);
-                return;
-            }
-            log.info("Пользователи уже друзья");
-            throw new FriendAlreadyExistsException("Пользователи уже друзья");
-        }
-        String sqlRequest2 = "insert into FRIENDS (INTERROGATOR_ID, DEFENDANT_ID, FRIENDSHIP_STATUS_ID)" +
-                " SELECT ?, ?, FRIENDSHIP_STATUS_ID FROM FRIENDSHIP_STATUS WHERE NAME = 'request' LIMIT 1";
-        jdbcTemplate.update(sqlRequest2, interrogator, defendant);
-        log.info("Добавлен запрос в друзья пользователю с id = {} от пользователя с id = {}", defendant, interrogator);
-    }
-
-    @Override
     public Collection<User> getFriends(Long id) {
         String sqlRequest = "SELECT u.*\n" +
                 "FROM (SELECT CASE WHEN f.INTERROGATOR_ID = ? THEN f.DEFENDANT_ID WHEN f.DEFENDANT_ID = ? THEN f.INTERROGATOR_ID END AS friends\n" +
@@ -99,14 +75,6 @@ public class UserDbStorage implements UserStorage {
                 "    JOIN USERS u ON u.USER_ID =  f.friends";
         SqlRowSet rs = jdbcTemplate.queryForRowSet(sqlRequest, id, id, id, id);
         return rowSetToUserList(rs);
-    }
-
-
-    @Override
-    public void deleteFriend(Long id, Long delId) {
-        String sqlRequest = "DELETE FROM FRIENDS WHERE (DEFENDANT_ID = ? and INTERROGATOR_ID = ?)" +
-                " OR (DEFENDANT_ID = ? and INTERROGATOR_ID = ?)";
-        jdbcTemplate.update(sqlRequest, id, delId, delId, id);
     }
 
     @Override

@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.exception.DataDoesNotExistsException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.LikeStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.time.LocalDate;
@@ -19,11 +20,15 @@ import java.util.Collection;
 public class FilmService extends ModelService<Film, FilmStorage> {
 
     UserStorage userStorage;
+    LikeStorage likeStorage;
 
     @Autowired
-    public FilmService(@Qualifier("FilmDbStorage") FilmStorage filmStorage, @Qualifier("UserDbStorage") UserStorage userStorage ) {
+    public FilmService(@Qualifier("FilmDbStorage") FilmStorage filmStorage,
+                       @Qualifier("UserDbStorage") UserStorage userStorage,
+                       @Qualifier("LikeDbStorage") LikeStorage likeStorage) {
         this.storage = filmStorage;
         this.userStorage = userStorage;
+        this.likeStorage = likeStorage;
     }
 
     public void addLike(Long filmId, Long userId) {
@@ -39,7 +44,7 @@ public class FilmService extends ModelService<Film, FilmStorage> {
         }
 
         log.info(String.format("Пользователь с  id = %d и фильм с id = %d существуют, обращаемся к хранилищу фильмов", userId, filmId));
-        storage.addLike(filmId, userId);
+        likeStorage.addLike(filmId, userId);
     }
 
     public void deleteLike(Long filmId, Long userId) {
@@ -53,7 +58,7 @@ public class FilmService extends ModelService<Film, FilmStorage> {
             throw new DataDoesNotExistsException(String.format("Фильм с  id = %d не найден", filmId));
         }
         log.info(String.format("Пользователь с  id = %d и фильм с id = %d существуют, обращаемся к хранилищу фильмов", userId, filmId));
-        storage.deleteLike(filmId, userId);
+        likeStorage.deleteLike(filmId, userId);
     }
 
     public Collection<Film> getPopular(int count) {

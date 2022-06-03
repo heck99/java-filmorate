@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.DefaultModel;
 import ru.yandex.practicum.filmorate.sevice.ModelService;
@@ -25,7 +24,7 @@ public abstract class DefaultController<V extends ModelService, T extends Defaul
 
     @GetMapping("/{id}")
     public T GetElement(@PathVariable Long id) {
-        log.info("/GET /{" + id + "}");
+        log.info("/GET /{}", id);
         return (T) service.getElement(id);
     }
 

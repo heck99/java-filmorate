@@ -30,7 +30,7 @@ public class Film extends DefaultModel{
     @NotNull
     private Mpa mpa;
 
-    private Set<String> genres;
+    private Set<Genre> genres;
 
     public Film(String name, String description, LocalDate releaseDate, Integer duration, Mpa mpa) {
         this.name = name;
