@@ -30,8 +30,7 @@ JOIN friendship_statuses AS s ON f.status = s.id
 WHERE (f.interrogator = 1 OR f.defendant = 1) AND s.name = 'accept'
 
 ---
-## Общие друзья пользователей с id = 1,4  
-SELECT  
+## Общие друзья пользователей с id = 1,4   
 SELECT
 f_f.friends
 FROM (SELECT

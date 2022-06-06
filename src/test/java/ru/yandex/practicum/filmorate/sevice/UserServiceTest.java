@@ -2,10 +2,9 @@ package ru.yandex.practicum.filmorate.sevice;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.yandex.practicum.filmorate.controller.UserController;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.impl.InMemoryUserStorage;
 
 import java.time.LocalDate;
 
@@ -13,8 +12,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class UserServiceTest {
 
-    @Autowired
-    UserService userService= new UserService(new InMemoryUserStorage());
+
+    UserService userService = new UserService(new InMemoryUserStorage(), null);
 
     @Test
     public void shouldReturnTrueWhenUserDataIsCorrect() {

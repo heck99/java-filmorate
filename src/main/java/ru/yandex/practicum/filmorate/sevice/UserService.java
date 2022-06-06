@@ -2,9 +2,12 @@ package ru.yandex.practicum.filmorate.sevice;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.DataDoesNotExistsException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.FriendStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.time.LocalDate;
@@ -15,15 +18,30 @@ import java.util.Collection;
 @Slf4j
 public class UserService extends ModelService<User, UserStorage> {
 
+
+    /*Тут я так же решил вставить стораж в сервис пользователей из-за проверки
+     на существование пользователей перед добавлением в друзья */
+    FriendStorage friendStorage;
+
     @Autowired
-    public UserService(UserStorage userStorage) {
-        log.info("Обращаемся к хранилищу");
+    public UserService(@Qualifier("UserDbStorage") UserStorage userStorage,
+                       @Qualifier("FriendDbStorage") FriendStorage friendStorage) {
         this.storage = userStorage;
+        this.friendStorage = friendStorage;
     }
 
     public void addFriend(Long id, Long friendId) {
+        log.info(String.format("Проверяем наличие пользователя с id = %d и id = %d", id, friendId));
+        if(storage.getElement(id).isEmpty()) {
+            log.info("Пользователь с  id = {} не найден", id);
+            throw new DataDoesNotExistsException(String.format("Пользователь с  id = %d не найден", id));
+        }
+        if(storage.getElement(friendId).isEmpty()) {
+            log.info("Пользователь с  id = {} не найден", friendId);
+            throw new DataDoesNotExistsException(String.format("Пользователь с  id = %d не найден", friendId));
+        }
         log.info("Обращаемся к хранилищу");
-        storage.addFriend(id, friendId);
+        friendStorage.addFriend(id, friendId);
     }
 
     public Collection<User> getFriends(Long id) {
@@ -32,11 +50,30 @@ public class UserService extends ModelService<User, UserStorage> {
     }
 
     public void deleteFriend(Long id, Long delId) {
+        log.info(String.format("Проверяем наличие пользователя с id = %d и id = %d", id, delId));
+        if(storage.getElement(id).isEmpty()) {
+            log.info("Пользователь с  id = {} не найден", id);
+            throw new DataDoesNotExistsException(String.format("Пользователь с  id = %d не найден", id));
+        }
+        if(storage.getElement(delId).isEmpty()) {
+            log.info("Пользователь с  id = {} не найден", delId);
+            throw new DataDoesNotExistsException(String.format("Пользователь с  id = %d не найден", delId));
+        }
         log.info("Обращаемся к хранилищу");
-        storage.deleteFriend(id, delId);
+        friendStorage.deleteFriend(id, delId);
     }
 
     public Collection<User> getCommonFriends(Long firstId, Long secondId) {
+
+        log.info(String.format("Проверяем наличие пользователя с id = %d и id = %d", firstId, secondId));
+        if(storage.getElement(firstId).isEmpty()) {
+            log.info("Пользователь с  id = {} не найден", firstId);
+            throw new DataDoesNotExistsException(String.format("Пользователь с  id = %d не найден", firstId));
+        }
+        if(storage.getElement(secondId).isEmpty()) {
+            log.info("Пользователь с  id = {} не найден", secondId);
+            throw new DataDoesNotExistsException(String.format("Пользователь с  id = %d не найден", secondId));
+        }
         log.info("Обращаемся к хранилищу");
         return storage.getCommonFriends(firstId, secondId);
     }
@@ -79,7 +116,6 @@ public class UserService extends ModelService<User, UserStorage> {
         if(user.getName().isEmpty()) {
             user.setName(user.getLogin());
         }
-
         return true;
     }
 }

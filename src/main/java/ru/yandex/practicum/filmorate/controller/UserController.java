@@ -19,19 +19,19 @@ public class UserController extends DefaultController<UserService, User>{
 
     @PutMapping("/{id}/friends/{friendId}")
     public void addFriends(@PathVariable Long id, @PathVariable Long friendId) {
-        log.info(String.format("/PUT /users/%d1/friends/%d2", id, friendId));
+        log.info(String.format("/PUT /users/%d/friends/%d", id, friendId));
         service.addFriend(id, friendId);
     }
 
     @DeleteMapping("/{id}/friends/{friendId}")
     public void deleteFriend(@PathVariable Long id, @PathVariable Long friendId) {
-        log.info(String.format("/DELETE /users/%d1/friends/%d2", id, friendId));
+        log.info(String.format("/DELETE /users/%d/friends/%d", id, friendId));
         service.deleteFriend(id, friendId);
     }
 
     @GetMapping("/{id}/friends")
     public Collection<User> getFriends(@PathVariable Long id) {
-        log.info(String.format("/GET /users/%d1/friends", id));
+        log.info(String.format("/GET /users/%d/friends", id));
         return  service.getFriends(id);
     }
 

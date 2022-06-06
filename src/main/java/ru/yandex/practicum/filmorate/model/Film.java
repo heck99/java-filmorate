@@ -10,6 +10,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 
 @Getter
@@ -25,11 +27,31 @@ public class Film extends DefaultModel{
     @Positive
     @NotNull
     private Integer duration;
+    @NotNull
+    private Mpa mpa;
 
-    public Film(String name, String description, LocalDate releaseDate, Integer duration) {
+    private Set<Genre> genres;
+
+    public Film(String name, String description, LocalDate releaseDate, Integer duration, Mpa mpa) {
         this.name = name;
         this.description = description;
         this.releaseDate = releaseDate;
         this.duration = duration;
+        this.mpa = mpa;
+        genres = new HashSet<>();
     }
+    public Film(){
+        super();
+    }
+
+    public Film(long id, String name, String description, LocalDate releaseDate, Integer duration, Mpa mpa) {
+        super(id);
+        this.name = name;
+        this.description = description;
+        this.releaseDate = releaseDate;
+        this.duration = duration;
+        this.mpa = mpa;
+        genres = new HashSet<>();
+    }
+
 }

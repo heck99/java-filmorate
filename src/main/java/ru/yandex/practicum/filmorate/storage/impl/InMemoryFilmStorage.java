@@ -1,15 +1,17 @@
-package ru.yandex.practicum.filmorate.storage;
+package ru.yandex.practicum.filmorate.storage.impl;
 
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.*;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.LikeStorage;
 
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
-public class InMemoryFilmStorage implements FilmStorage{
+public class InMemoryFilmStorage implements FilmStorage, LikeStorage {
 
     Map<Long, Film> films;
     Map<Long, Set<Long>> likes;
@@ -21,7 +23,7 @@ public class InMemoryFilmStorage implements FilmStorage{
 
     @Override
     public Film create(Film element) {
-        element.setId(Long.valueOf(films.size()) + 1);
+        element.setId((long) films.size() + 1);
         films.put(element.getId(), element);
         likes.put(element.getId(), new HashSet<>());
         return element;
@@ -34,12 +36,12 @@ public class InMemoryFilmStorage implements FilmStorage{
     }
 
     @Override
-    public Film getElement(Long id) {
+    public Optional<Film> getElement(Long id) {
         Film film = films.get(id);
         if(film == null) {
-            throw new FilmNotFoundException(String.format("Фильм c id: %d не найден", id));
+            return Optional.empty();
         }
-        return film;
+        return Optional.of(film);
     }
 
     @Override
@@ -52,7 +54,7 @@ public class InMemoryFilmStorage implements FilmStorage{
     public void addLike(Long filmId, Long userId) {
         //проверяем существование фильма
         if(!likes.containsKey(filmId)) {
-            throw new FilmNotFoundException(String.format("Фильм c id: %d не найден", filmId));
+            throw new DataDoesNotExistsException(String.format("Фильм c id: %d не найден", filmId));
         }
 
         //добавляем лайк, если уже поставлен кидаем исключение
@@ -65,7 +67,7 @@ public class InMemoryFilmStorage implements FilmStorage{
     @Override
     public void deleteLike(Long filmId, Long userId) {
         if(!likes.containsKey(filmId)) {
-            throw new FilmNotFoundException(String.format("Фильм c id: %d не найден", filmId));
+            throw new DataDoesNotExistsException(String.format("Фильм c id: %d не найден", filmId));
         }
 
         if(!likes.get(filmId).remove(userId)) {
