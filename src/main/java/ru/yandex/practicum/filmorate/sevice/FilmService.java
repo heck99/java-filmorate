@@ -19,33 +19,22 @@ import java.util.Collection;
 @Slf4j
 public class FilmService extends ModelService<Film, FilmStorage> {
 
-    UserStorage userStorage;
+    UserService userService;
     LikeStorage likeStorage;
 
     @Autowired
     public FilmService(@Qualifier("FilmDbStorage") FilmStorage filmStorage,
-                       @Qualifier("UserDbStorage") UserStorage userStorage,
+                       @Qualifier("UserDbStorage") UserService userService,
                        @Qualifier("LikeDbStorage") LikeStorage likeStorage) {
         this.storage = filmStorage;
-        this.userStorage = userStorage;
-        /*Я решил, что лучше вставить хранилище сюда, а не создавать отдельный сервис, потому что в методах
-        постановки лайка нам нужно проверять наличие фильма и пользователя, а это уже делает этот метод
-        хотя может я и не прав и нужно было создать отдельный сервис который ставил бы и удалял лайки и в него
-        добавить так же сервис пользователей и фильмов */
+        this.userService = userService;
         this.likeStorage = likeStorage;
     }
 
     public void addLike(Long filmId, Long userId) {
         log.info(String.format("Проверяем наличие пользователя с id = %d и фильма с id = %d", userId, filmId));
-
-        if(userStorage.getElement(userId).isEmpty()) {
-            log.info("Пользователь с  id = {} не найден", userId);
-            throw new DataDoesNotExistsException(String.format("Пользователь с  id = %d не найден", userId));
-        }
-        if(storage.getElement(filmId).isEmpty()) {
-            log.info("Фильм с  id = {} не не найден", filmId);
-            throw new DataDoesNotExistsException(String.format("Фильм с  id = %d не найден", filmId));
-        }
+        userService.getElement(userId);
+        getElement(filmId);
 
         log.info(String.format("Пользователь с  id = %d и фильм с id = %d существуют, обращаемся к хранилищу фильмов", userId, filmId));
         likeStorage.addLike(filmId, userId);
@@ -53,14 +42,8 @@ public class FilmService extends ModelService<Film, FilmStorage> {
 
     public void deleteLike(Long filmId, Long userId) {
         log.info(String.format("Проверяем наличие пользователя с id = %d и фильма с id = %d", userId, filmId));
-        if(userStorage.getElement(userId).isEmpty()) {
-            log.info("Пользователь с  id = {} не найден", userId);
-            throw new DataDoesNotExistsException(String.format("Пользователь с  id = %d не найден", userId));
-        }
-        if(storage.getElement(filmId).isEmpty()) {
-            log.info("Фильм с  id = {} не не найден", filmId);
-            throw new DataDoesNotExistsException(String.format("Фильм с  id = %d не найден", filmId));
-        }
+        userService.getElement(userId);
+        getElement(filmId);
         log.info(String.format("Пользователь с  id = %d и фильм с id = %d существуют, обращаемся к хранилищу фильмов", userId, filmId));
         likeStorage.deleteLike(filmId, userId);
     }
