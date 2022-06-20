@@ -4,12 +4,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.DataDoesNotExistsException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.storage.FilmGenreStorage;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.LikeStorage;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
+
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -21,14 +22,20 @@ public class FilmService extends ModelService<Film, FilmStorage> {
 
     UserService userService;
     LikeStorage likeStorage;
+    GenreService genreService;
+    FilmGenreStorage FGStorage;
 
     @Autowired
     public FilmService(@Qualifier("FilmDbStorage") FilmStorage filmStorage,
-                       @Qualifier("UserDbStorage") UserService userService,
-                       @Qualifier("LikeDbStorage") LikeStorage likeStorage) {
+                       UserService userService,
+                       @Qualifier("LikeDbStorage") LikeStorage likeStorage,
+                       GenreService genreService,
+                       FilmGenreStorage FGStorage) {
         this.storage = filmStorage;
         this.userService = userService;
         this.likeStorage = likeStorage;
+        this.genreService = genreService;
+        this.FGStorage = FGStorage;
     }
 
     public void addLike(Long filmId, Long userId) {
@@ -51,6 +58,55 @@ public class FilmService extends ModelService<Film, FilmStorage> {
     public Collection<Film> getPopular(int count) {
         log.info("Обращаемся к хранилищу фильмов");
         return storage.getPopular(count);
+    }
+
+    @Override
+    public Film create(Film element) {
+        Film film = super.create(element);
+        Collection<Genre> genres = element.getGenres();
+        if(genres != null) {
+            for (Genre genre: genres) {
+                FGStorage.create(film.getId(), genre.getId());
+            }
+            film.addAllGenre(genres);
+        }
+        return film;
+    }
+
+    @Override
+    public Film getElement(Long id) {
+        Film film = super.getElement(id);
+        Collection<Genre> genres = genreService.getAllByFilmId(film.getId());
+        if(genres.size() > 0) {
+            film.addAllGenre(genres);
+        }
+        return film;
+    }
+
+    @Override
+    public Collection<Film> getAll() {
+        Collection<Film> films = super.getAll();
+        for(Film film: films) {
+            Collection<Genre> genres = genreService.getAllByFilmId(film.getId());
+            if(genres.size() > 0) {
+                film.addAllGenre(genres);
+            }
+        }
+        return films;
+    }
+
+    @Override
+    public Film putElement(Film element) {
+        Film film = super.putElement(element);
+        FGStorage.deleteAllFilmGenre(film.getId());
+        Collection<Genre> genres = element.getGenres();
+        if(genres != null) {
+            for (Genre genre: genres) {
+                FGStorage.create(film.getId(), genre.getId());
+            }
+            film.addAllGenre(genres);
+        }
+        return film;
     }
 
     @Override

@@ -10,6 +10,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -38,7 +39,6 @@ public class Film extends DefaultModel{
         this.releaseDate = releaseDate;
         this.duration = duration;
         this.mpa = mpa;
-        genres = new HashSet<>();
     }
     public Film(){
         super();
@@ -51,7 +51,12 @@ public class Film extends DefaultModel{
         this.releaseDate = releaseDate;
         this.duration = duration;
         this.mpa = mpa;
-        genres = new HashSet<>();
+    }
+    public void addAllGenre(Collection<Genre> genres) {
+        if(this.genres == null) {
+            this.genres = new HashSet<>();
+        }
+        this.genres.addAll(genres);
     }
 
 }

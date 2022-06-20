@@ -7,6 +7,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
@@ -95,14 +96,23 @@ public class FilmDbStorage implements FilmStorage {
         String description = rs.getString("description");
         LocalDate date = rs.getDate("release_date").toLocalDate();
         int duration = rs.getInt("duration");
+        Mpa mpa = getMpaById(rs.getLong("mpa_id"));
+        Film film = new Film(id, name, description, date, duration, mpa);
+        return film;
+    }
+
+    private Mpa getMpaById(Long id) {
         String sql = "SELECT mpa_id, name, description FROM mpa WHERE mpa_id = ?";
-        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, rs.getInt("mpa_id"));
-        rowSet.next();
-        long mpa_id = rowSet.getLong("mpa_id");
-        String mpa_name =  rowSet.getString("name");
-        String mpa_description =  rowSet.getString("description");
-        Mpa mpa = new Mpa(mpa_id, mpa_name, mpa_description);
-        return new Film(id, name, description, date, duration, mpa);
+        SqlRowSet rs = jdbcTemplate.queryForRowSet(sql, id);
+
+        if(!rs.next()) {
+            return null;
+        }
+        long mpa_id = rs.getLong("mpa_id");
+        String mpa_name =  rs.getString("name");
+        String mpa_description =  rs.getString("description");
+
+        return new Mpa(mpa_id, mpa_name, mpa_description);
     }
 
     private List<Film> rowSetToFilmList(SqlRowSet rs) {

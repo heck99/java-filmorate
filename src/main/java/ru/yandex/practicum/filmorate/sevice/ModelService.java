@@ -11,7 +11,7 @@ import java.util.Optional;
 @Slf4j
 public abstract class ModelService<V extends DefaultModel, T extends ModelStorage<V>> {
 
-    T storage;
+    protected T storage;
 
     public V create(V element) {
         isValid(element);
