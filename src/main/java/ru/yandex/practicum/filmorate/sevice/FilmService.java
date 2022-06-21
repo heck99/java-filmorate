@@ -57,7 +57,14 @@ public class FilmService extends ModelService<Film, FilmStorage> {
 
     public Collection<Film> getPopular(int count) {
         log.info("Обращаемся к хранилищу фильмов");
-        return storage.getPopular(count);
+        Collection<Film> films = storage.getPopular(count);
+        for(Film film: films) {
+            Collection<Genre> genres = genreService.getAllByFilmId(film.getId());
+            if(genres.size() > 0) {
+                film.addAllGenre(genres);
+            }
+        }
+        return films;
     }
 
     @Override

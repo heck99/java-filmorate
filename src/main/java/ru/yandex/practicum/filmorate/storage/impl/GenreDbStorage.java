@@ -45,7 +45,17 @@ public class GenreDbStorage implements GenreStorage {
 
     @Override
     public Genre update(Genre element) {
-        return null;
+        String sqlQuery = "UPDATE genres SET name = ? where genre_id = ?";
+        jdbcTemplate.update(sqlQuery, element.getName(), element.getId());
+        log.info("Информация о жанре с id = {} обновлена", element.getId());
+        return getElement(element.getId()).get();
+    }
+
+    @Override
+    public boolean delete(Long id) {
+        String sql = "DELETE FROM genres WHERE genre_id = ?";
+        int rowUpdated = jdbcTemplate.update(sql, id);
+        return rowUpdated > 0;
     }
 
     @Override
