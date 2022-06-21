@@ -20,6 +20,13 @@ public abstract class ModelService<V extends DefaultModel, T extends ModelStorag
 
     }
 
+    public void delete (Long id) {
+        if(!storage.delete(id)) {
+            log.warn("Объект с id = {} не найден", id);
+            throw new DataDoesNotExistsException(String.format("Объект с id = %d не найден", id));
+        }
+    }
+
     public V getElement(Long id) {
         Optional<V> element = storage.getElement(id);
         if(element.isEmpty()) {

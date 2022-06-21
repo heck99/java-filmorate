@@ -39,7 +39,7 @@ create table if not exists films
     constraint FILMS_PK
         primary key (film_id),
     constraint MPA___FK
-        foreign key (mpa_id) references MPA
+        foreign key (mpa_id) references MPA ON DELETE CASCADE
 );
 
 create table  if not exists film_genre
@@ -49,9 +49,9 @@ create table  if not exists film_genre
     constraint FILM_GENRE_PK
         primary key (genre_id, film_id),
     constraint FILM__FK
-        foreign key (film_id) references FILMS,
+        foreign key (film_id) references FILMS ON DELETE CASCADE,
     constraint GENRE___FK_2
-        foreign key (genre_id) references GENRES
+        foreign key (genre_id) references GENRES ON DELETE CASCADE
 );
 
 create table if not exists users
@@ -73,11 +73,11 @@ create table if not exists friends
     constraint FRIENDS_PK
         primary key (defendant_id, interrogator_id),
     constraint "first___FK"
-        foreign key (interrogator_id) references users,
+        foreign key (interrogator_id) references users ON DELETE CASCADE,
     constraint "friendship_status___FK"
-        foreign key (friendship_status_id) references friendship_status,
+        foreign key (friendship_status_id) references friendship_status ON DELETE CASCADE,
     constraint "second___FK"
-        foreign key (defendant_id) references users
+        foreign key (defendant_id) references users ON DELETE CASCADE
 );
 
 create table if not exists likes
@@ -87,7 +87,7 @@ create table if not exists likes
     constraint LIKES_PK
         primary key (user_id, film_id),
     constraint "film___FK"
-        foreign key (film_id) references films,
+        foreign key (film_id) references films ON DELETE CASCADE,
     constraint "user___FK"
-        foreign key (user_id) references users
+        foreign key (user_id) references users ON DELETE CASCADE
 );
