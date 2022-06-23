@@ -3,13 +3,12 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.sevice.FilmService;
 import ru.yandex.practicum.filmorate.sevice.UserService;
 
 import java.util.Collection;
+import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -37,8 +36,10 @@ public class FilmController extends DefaultController<FilmService, Film> {
     }
 
     @GetMapping("/popular")
-    public Collection<Film> getPopular(@RequestParam(defaultValue = "10") String count) {
-        log.info(String.format("/GET /popular count = %s", count));
-        return service.getPopular(Integer.parseInt(count));
+    public Collection<Film> findPopularFilms(@RequestParam(defaultValue = "10", required = false) Integer count,
+                                             @RequestParam(required = false) Optional<Integer> year,
+                                             @RequestParam(required = false) Optional<Integer> genreId) {
+        log.info(String.format("/GET /popular count = %s, year = %s, genreId = %s", count, year, genreId));
+        return service.getPopular(count, genreId, year);
     }
 }
