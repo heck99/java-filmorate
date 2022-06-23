@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.LikeStorage;
 
 import java.util.Collection;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -25,14 +26,14 @@ class LikeDbStorageTest {
 
     @Test
     public void testAddLike() {
-        Collection<Film> populars = filmStorage.getPopular(3);
+        Collection<Film> populars = filmStorage.getPopular(3, Optional.empty(), Optional.empty());
         assertThat(populars).element(0).hasFieldOrPropertyWithValue("id", 3L);
         assertThat(populars).element(1).hasFieldOrPropertyWithValue("id", 2L);
         assertThat(populars).element(2).hasFieldOrPropertyWithValue("id", 1L);
         likeStorage.addLike(1L, 2L);
         likeStorage.addLike(1L, 3L);
         likeStorage.addLike(1L, 4L);
-        populars = filmStorage.getPopular(3);
+        populars = filmStorage.getPopular(3, Optional.empty(), Optional.empty());
         assertThat(populars).element(0).hasFieldOrPropertyWithValue("id", 1L);
         assertThat(populars).element(1).hasFieldOrPropertyWithValue("id", 3L);
         assertThat(populars).element(2).hasFieldOrPropertyWithValue("id", 2L);
@@ -40,14 +41,14 @@ class LikeDbStorageTest {
 
     @Test
     public void testDeleteLike() {
-        Collection<Film> populars = filmStorage.getPopular(3);
+        Collection<Film> populars = filmStorage.getPopular(3, Optional.empty(), Optional.empty());
         assertThat(populars).element(0).hasFieldOrPropertyWithValue("id", 3L);
         assertThat(populars).element(1).hasFieldOrPropertyWithValue("id", 2L);
         assertThat(populars).element(2).hasFieldOrPropertyWithValue("id", 1L);
         likeStorage.deleteLike(3L, 1L);
         likeStorage.deleteLike(3L, 2L);
         likeStorage.deleteLike(3L, 3L);
-        populars = filmStorage.getPopular(3);
+        populars = filmStorage.getPopular(3, Optional.empty(), Optional.empty());
         assertThat(populars).element(0).hasFieldOrPropertyWithValue("id", 2L);
         assertThat(populars).element(1).hasFieldOrPropertyWithValue("id", 1L);
         assertThat(populars).element(2).hasFieldOrPropertyWithValue("id", 3L);

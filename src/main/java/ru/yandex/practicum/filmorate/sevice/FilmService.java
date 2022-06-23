@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.sevice;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.relational.core.sql.In;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -15,6 +16,7 @@ import ru.yandex.practicum.filmorate.storage.LikeStorage;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -55,9 +57,13 @@ public class FilmService extends ModelService<Film, FilmStorage> {
         likeStorage.deleteLike(filmId, userId);
     }
 
-    public Collection<Film> getPopular(int count) {
+    public Collection<Film> getPopular(int count, Optional<Integer> genreId, Optional<Integer> year) {
         log.info("Обращаемся к хранилищу фильмов");
-        Collection<Film> films = storage.getPopular(count);
+        if (count <= 0) {
+            log.warn("FindPopular. Передан неверный параметр count {}", count);
+            throw new ValidationException("Передан неверный параметр count");
+        }
+        Collection<Film> films = storage.getPopular(count, genreId, year);
         for(Film film: films) {
             Collection<Genre> genres = genreService.getAllByFilmId(film.getId());
             if(genres.size() > 0) {

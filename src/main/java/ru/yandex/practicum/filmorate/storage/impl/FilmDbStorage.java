@@ -31,12 +31,35 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Collection<Film> getPopular(int count) {
-        String sql = "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.mpa_id FROM FILMS f" +
-                " LEFT JOIN likes L on f.film_id = L.film_id" +
-                " GROUP BY f.name, f.description, f.name, f.film_id, f.release_date, f.duration, f.mpa_id" +
-                " ORDER BY count(user_id) DESC LIMIT ?";
-        SqlRowSet rs = jdbcTemplate.queryForRowSet(sql, count);
+    public Collection<Film> getPopular(int count, Optional<Integer> genreId, Optional<Integer> year) {
+        StringBuilder condition = new StringBuilder(" WHERE 1=1 ");
+
+        if (year.isPresent()) {
+            condition.append(" AND EXTRACT(YEAR FROM f.RELEASE_DATE) = ? ");
+        }
+        if (genreId.isPresent()) {
+            condition.append(" AND fg.GENRE_ID = ? ");
+        }
+
+        String sqlQuery = "SELECT f.* " +
+                "FROM films f " +
+                "LEFT JOIN mpa m ON f.mpa_id = m.mpa_id " +
+                "LEFT JOIN likes l ON f.film_id = l.film_id " +
+                "LEFT JOIN FILM_GENRE fg on f.film_id = fg.film_id " +
+                condition.toString() +
+                " GROUP BY f.film_id " +
+                "ORDER BY count(l.film_id) DESC " +
+                "LIMIT ?";
+        SqlRowSet rs;
+        if (year.isPresent() && genreId.isPresent()) {
+             rs = jdbcTemplate.queryForRowSet(sqlQuery, year.get(), genreId.get(), count);
+        } else if (year.isPresent()) {
+            rs = jdbcTemplate.queryForRowSet(sqlQuery, year.get(), count);
+        } else if (genreId.isPresent()) {
+            rs = jdbcTemplate.queryForRowSet(sqlQuery,genreId.get(), count);
+        } else {
+            rs = jdbcTemplate.queryForRowSet(sqlQuery, count);
+        }
         return rowSetToFilmList(rs);
     }
 

@@ -80,7 +80,7 @@ public class FilmDbStorageTest {
 
     @Test
     public void testGetPopular() {
-        Collection<Film> populars = filmStorage.getPopular(2);
+        Collection<Film> populars = filmStorage.getPopular(2, Optional.empty(), Optional.empty());
         assertThat(populars).hasSize(2);
         assertThat(populars).element(0).hasFieldOrPropertyWithValue("id", 3L);
     }
