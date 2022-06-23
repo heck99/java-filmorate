@@ -58,12 +58,14 @@ public class FilmService extends ModelService<Film, FilmStorage> {
     public Collection<Film> getPopular(int count) {
         log.info("Обращаемся к хранилищу фильмов");
         Collection<Film> films = storage.getPopular(count);
-        for(Film film: films) {
-            Collection<Genre> genres = genreService.getAllByFilmId(film.getId());
-            if(genres.size() > 0) {
-                film.addAllGenre(genres);
-            }
-        }
+        setGenreForFilmCollection(films);
+        return films;
+    }
+
+    public Collection<Film> getCommon(Long id, Long secondId) {
+        log.info("Обращаемся к хранилищу фильмов");
+        Collection<Film> films = storage.getCommon(id, secondId);
+        setGenreForFilmCollection(films);
         return films;
     }
 
@@ -83,22 +85,14 @@ public class FilmService extends ModelService<Film, FilmStorage> {
     @Override
     public Film getElement(Long id) {
         Film film = super.getElement(id);
-        Collection<Genre> genres = genreService.getAllByFilmId(film.getId());
-        if(genres.size() > 0) {
-            film.addAllGenre(genres);
-        }
+        setFilmGenre(film);
         return film;
     }
 
     @Override
     public Collection<Film> getAll() {
         Collection<Film> films = super.getAll();
-        for(Film film: films) {
-            Collection<Genre> genres = genreService.getAllByFilmId(film.getId());
-            if(genres.size() > 0) {
-                film.addAllGenre(genres);
-            }
-        }
+        setGenreForFilmCollection(films);
         return films;
     }
 
@@ -114,6 +108,19 @@ public class FilmService extends ModelService<Film, FilmStorage> {
             film.addAllGenre(genres);
         }
         return film;
+    }
+
+    private void setGenreForFilmCollection(Collection<Film> films) {
+        for(Film film: films) {
+            setFilmGenre(film);
+        }
+    }
+
+    private void setFilmGenre(Film film) {
+            Collection<Genre> genres = genreService.getAllByFilmId(film.getId());
+            if(genres.size() > 0) {
+                film.addAllGenre(genres);
+            }
     }
 
     @Override
