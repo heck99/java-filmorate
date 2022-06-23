@@ -18,9 +18,6 @@ import java.util.Collection;
 @Slf4j
 public class UserService extends ModelService<User, UserStorage> {
 
-
-    /*Тут я так же решил вставить стораж в сервис пользователей из-за проверки
-     на существование пользователей перед добавлением в друзья */
     FriendStorage friendStorage;
 
     @Autowired
