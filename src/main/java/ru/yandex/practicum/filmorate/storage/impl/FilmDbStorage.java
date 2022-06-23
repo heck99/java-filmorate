@@ -64,6 +64,17 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
+    public Collection<Film> getCommon(Long id, Long secondId) {
+        String sql = "SELECT f.*, m.* FROM films f " +
+                "JOIN likes l ON f.film_id = l.film_id " +
+                "JOIN likes l2 ON l.film_id = l2.film_id " +
+                "JOIN mpa m ON f.mpa_id = m.mpa_id " +
+                "WHERE l.user_id = ? AND l2.user_id = ?";
+        SqlRowSet rs = jdbcTemplate.queryForRowSet(sql, id, secondId);
+        return rowSetToFilmList(rs);
+    }
+
+    @Override
     public Film create(Film element) {
         String sqlQuery = "INSERT INTO films (name, description, release_date, duration, mpa_id) VALUES( ?, ?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();

@@ -36,10 +36,18 @@ public class FilmController extends DefaultController<FilmService, Film> {
     }
 
     @GetMapping("/popular")
-    public Collection<Film> findPopularFilms(@RequestParam(defaultValue = "10", required = false) Integer count,
+    public Collection<Film> getPopularFilms(@RequestParam(defaultValue = "10", required = false) Integer count,
                                              @RequestParam(required = false) Optional<Integer> year,
                                              @RequestParam(required = false) Optional<Integer> genreId) {
         log.info(String.format("/GET /popular count = %s, year = %s, genreId = %s", count, year, genreId));
         return service.getPopular(count, genreId, year);
     }
+
+    @GetMapping("/common")
+    public Collection<Film> getCommon(@RequestParam() long userId,
+                                      @RequestParam() long friendId) {
+        log.info(String.format("/GET /common userId = %d, friendId = %d", userId, friendId));
+        return service.getCommon(userId, friendId);
+    }
+
 }
