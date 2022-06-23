@@ -15,12 +15,10 @@ import java.util.Optional;
 @RequestMapping("/films")
 public class FilmController extends DefaultController<FilmService, Film> {
 
-    UserService userService;
 
     @Autowired
-    public FilmController(FilmService service, UserService userService) {
+    public FilmController(FilmService service) {
         super(service);
-        this.userService = userService;
     }
 
     @PutMapping("/{id}/like/{userId}")

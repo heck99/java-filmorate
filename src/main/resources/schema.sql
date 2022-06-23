@@ -1,7 +1,7 @@
 create table if not exists genres
 (
     genre_id INTEGER auto_increment,
-    name   CHARACTER VARYING,
+    name     CHARACTER VARYING,
     constraint GENRES_PK
         primary key (GENRE_ID)
 );
@@ -42,7 +42,7 @@ create table if not exists films
         foreign key (mpa_id) references MPA ON DELETE CASCADE
 );
 
-create table  if not exists film_genre
+create table if not exists film_genre
 (
     film_id  INTEGER not null,
     genre_id INTEGER not null,
@@ -89,5 +89,30 @@ create table if not exists likes
     constraint "film___FK"
         foreign key (film_id) references films ON DELETE CASCADE,
     constraint "user___FK"
+        foreign key (user_id) references users ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS reviews
+(
+    review_id          INTEGER AUTO_INCREMENT PRIMARY KEY NOT NULL,
+    content     CHARACTER VARYING                           NOT NULL,
+    is_positive boolean                        NOT NULL,
+    user_id     INTEGER                            NOT NULL,
+    film_id     INTEGER                            NOT NULL,
+    useful      INTEGER       DEFAULT (0),
+        constraint REVIEW_PF
+            primary key (review_id)
+);
+
+create table if not exists likes_review
+(
+    review_id INTEGER not null,
+    user_id INTEGER not null,
+    is_like boolean not null,
+    constraint LIKES_REVIEW_PK
+        primary key (user_id, review_id),
+    constraint "REVIEW___FK"
+        foreign key (review_id) references reviews ON DELETE CASCADE,
+    constraint "LIKES_REVIEW_USER___FK"
         foreign key (user_id) references users ON DELETE CASCADE
 );
