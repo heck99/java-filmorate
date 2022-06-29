@@ -48,4 +48,11 @@ public class FilmController extends DefaultController<FilmService, Film> {
         return service.getCommon(userId, friendId);
     }
 
+    @GetMapping("/director/{directorId}")
+    public Collection<Film> getCommon(@PathVariable() long directorId,
+                                      @RequestParam() String sortBy) {
+        log.info(String.format("/GET /director directorId = %d, sortBy = %s", directorId, sortBy));
+        return service.getByDirectorId(directorId, sortBy);
+    }
+
 }

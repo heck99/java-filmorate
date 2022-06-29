@@ -8,4 +8,6 @@ import java.util.Optional;
 public interface FilmStorage extends ModelStorage<Film>{
     Collection<Film> getPopular(int count, Optional<Integer> genreId, Optional<Integer> year);
     Collection<Film> getCommon(Long id, Long secondId);
+    Collection<Film> getByDirectorIdSortByLikes(long directorId);
+    Collection<Film> getByDirectorIdSortByYear(long directorId);
 }

@@ -6,6 +6,14 @@ create table if not exists genres
         primary key (GENRE_ID)
 );
 
+create table if not exists directors
+(
+    director_id INTEGER auto_increment,
+    name     CHARACTER VARYING,
+    constraint DIRECTORS_PK
+        primary key (director_id)
+);
+
 create table if not exists friendship_status
 (
     friendship_status_id INTEGER auto_increment,
@@ -49,9 +57,21 @@ create table if not exists film_genre
     constraint FILM_GENRE_PK
         primary key (genre_id, film_id),
     constraint FILM__FK
-        foreign key (film_id) references FILMS ON DELETE CASCADE,
+        foreign key (film_id) REFERENCES FILMS ON DELETE CASCADE,
     constraint GENRE___FK_2
-        foreign key (genre_id) references GENRES ON DELETE CASCADE
+        foreign key (genre_id) REFERENCES GENRES ON DELETE CASCADE
+);
+
+create table if not exists film_director
+(
+    film_id  INTEGER not null,
+    director_id INTEGER not null,
+    constraint FILM_DIRECTOR_PK
+        primary key (director_id, film_id),
+    constraint FILM__FK_2
+        foreign key (film_id) REFERENCES films ON DELETE CASCADE,
+    constraint DIRECTOR___FK
+        foreign key (director_id) REFERENCES directors ON DELETE CASCADE
 );
 
 create table if not exists users

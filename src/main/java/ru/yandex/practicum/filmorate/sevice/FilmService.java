@@ -3,11 +3,12 @@ package ru.yandex.practicum.filmorate.sevice;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.relational.core.sql.In;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.storage.FilmDirectorStorage;
 import ru.yandex.practicum.filmorate.storage.FilmGenreStorage;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.LikeStorage;
@@ -27,17 +28,24 @@ public class FilmService extends ModelService<Film, FilmStorage> {
     GenreService genreService;
     FilmGenreStorage FGStorage;
 
+    DirectorService directorService;
+    FilmDirectorStorage FDStorage;
+
     @Autowired
     public FilmService(@Qualifier("FilmDbStorage") FilmStorage filmStorage,
                        UserService userService,
                        @Qualifier("LikeDbStorage") LikeStorage likeStorage,
                        GenreService genreService,
-                       FilmGenreStorage FGStorage) {
+                       FilmGenreStorage FGStorage,
+                       DirectorService directorService,
+                       FilmDirectorStorage FDStorage) {
         this.storage = filmStorage;
         this.userService = userService;
         this.likeStorage = likeStorage;
         this.genreService = genreService;
         this.FGStorage = FGStorage;
+        this.directorService = directorService;
+        this.FDStorage = FDStorage;
     }
 
     public void addLike(Long filmId, Long userId) {
@@ -65,6 +73,7 @@ public class FilmService extends ModelService<Film, FilmStorage> {
         }
         Collection<Film> films = storage.getPopular(count, genreId, year);
         setGenreForFilmCollection(films);
+        setDirectorsForFilmCollection(films);
         return films;
     }
 
@@ -75,6 +84,7 @@ public class FilmService extends ModelService<Film, FilmStorage> {
         userService.getElement(secondId);
         Collection<Film> films = storage.getCommon(id, secondId);
         setGenreForFilmCollection(films);
+        setDirectorsForFilmCollection(films);
         return films;
     }
 
@@ -82,12 +92,18 @@ public class FilmService extends ModelService<Film, FilmStorage> {
     public Film create(Film element) {
         Film film = super.create(element);
         Collection<Genre> genres = element.getGenres();
+        Collection<Director> directors = element.getDirectors();
         if(genres != null) {
             for (Genre genre: genres) {
                 FGStorage.create(film.getId(), genre.getId());
             }
             film.addAllGenre(genres);
         }
+        for (Director director: directors) {
+            FDStorage.create(film.getId(), director.getId());
+        }
+        film.addAllDirectors(directors);
+
         return film;
     }
 
@@ -95,6 +111,7 @@ public class FilmService extends ModelService<Film, FilmStorage> {
     public Film getElement(Long id) {
         Film film = super.getElement(id);
         setFilmGenre(film);
+        setFilmDirectors(film);
         return film;
     }
 
@@ -102,6 +119,7 @@ public class FilmService extends ModelService<Film, FilmStorage> {
     public Collection<Film> getAll() {
         Collection<Film> films = super.getAll();
         setGenreForFilmCollection(films);
+        setDirectorsForFilmCollection(films);
         return films;
     }
 
@@ -109,14 +127,42 @@ public class FilmService extends ModelService<Film, FilmStorage> {
     public Film putElement(Film element) {
         Film film = super.putElement(element);
         FGStorage.deleteAllFilmGenre(film.getId());
+        FDStorage.deleteAllFilmDirectors(film.getId());
         Collection<Genre> genres = element.getGenres();
+        Collection<Director> directors = element.getDirectors();
         if(genres != null) {
             for (Genre genre: genres) {
                 FGStorage.create(film.getId(), genre.getId());
             }
             film.addAllGenre(genres);
         }
+        if(directors.size() > 0) {
+            for (Director director: directors) {
+                FDStorage.create(film.getId(), director.getId());
+            }
+            film.addAllDirectors(directors);
+        } else {
+            film.setDirectors(null);
+        }
         return film;
+    }
+
+    public Collection<Film> getByDirectorId(long directorId, String sort) {
+        directorService.getElement(directorId);
+        Collection<Film> films;
+        switch (sort) {
+            case "year":
+                films = storage.getByDirectorIdSortByYear(directorId);
+                break;
+            case "likes":
+                films = storage.getByDirectorIdSortByLikes(directorId);
+                break;
+            default:
+                throw new ValidationException("введён неверный параметр sortBy");
+        }
+        setGenreForFilmCollection(films);
+        setDirectorsForFilmCollection(films);
+        return films;
     }
 
     private void setGenreForFilmCollection(Collection<Film> films) {
@@ -130,6 +176,17 @@ public class FilmService extends ModelService<Film, FilmStorage> {
         if(genres.size() > 0) {
             film.addAllGenre(genres);
         }
+    }
+
+    private void setDirectorsForFilmCollection(Collection<Film> films) {
+        for(Film film: films) {
+            setFilmDirectors(film);
+        }
+    }
+
+    private void setFilmDirectors(Film film) {
+        Collection<Director> directors = directorService.getAllByFilmId(film.getId());
+        film.addAllDirectors(directors);
     }
 
     @Override
