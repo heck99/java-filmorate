@@ -32,6 +32,7 @@ public class Film extends DefaultModel{
     private Mpa mpa;
 
     private Set<Genre> genres;
+    private Set<Director> directors = new HashSet<>();
 
     public Film(String name, String description, LocalDate releaseDate, Integer duration, Mpa mpa) {
         this.name = name;
@@ -57,6 +58,10 @@ public class Film extends DefaultModel{
             this.genres = new HashSet<>();
         }
         this.genres.addAll(genres);
+    }
+
+    public void addAllDirectors(Collection<Director> directors) {
+        this.directors.addAll(directors);
     }
 
 }

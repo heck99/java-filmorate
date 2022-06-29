@@ -75,6 +75,32 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
+    public Collection<Film> getByDirectorIdSortByLikes(long directorId) {
+        String sql = "SELECT f.*, m.*" +
+                "FROM films f" +
+                "    LEFT JOIN likes l ON f.film_id = l.film_id" +
+                "    LEFT JOIN mpa m ON f.mpa_id = m.mpa_id" +
+                "    LEFT JOIN film_director f_d on f.film_id = f_d.film_id" +
+                "    WHERE f_d.director_id = ?" +
+                "    GROUP BY f.film_id" +
+                "    ORDER BY count(l.user_id)";
+        SqlRowSet rs = jdbcTemplate.queryForRowSet(sql, directorId);
+        return rowSetToFilmList(rs);
+    }
+
+    @Override
+    public Collection<Film> getByDirectorIdSortByYear(long directorId) {
+        String sql = "SELECT f.*, m.* FROM films f " +
+                "LEFT JOIN mpa m ON f.mpa_id = m.mpa_id " +
+                "LEFT JOIN film_director f_d on f.film_id = f_d.film_id " +
+                "WHERE f_d.director_id = ?" +
+                "ORDER BY release_date";
+        SqlRowSet rs = jdbcTemplate.queryForRowSet(sql, directorId);
+        return rowSetToFilmList(rs);
+    }
+
+
+    @Override
     public Film create(Film element) {
         String sqlQuery = "INSERT INTO films (name, description, release_date, duration, mpa_id) VALUES( ?, ?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
