@@ -75,6 +75,49 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
+    public Collection<Film> searchByDirector(String text) {
+        String sql = "SELECT f.*, m.* " +
+                "FROM films f" +
+                "         LEFT JOIN likes l ON f.film_id = l.film_id" +
+                "         JOIN mpa m ON f.mpa_id = m.mpa_id" +
+                "         LEFT JOIN film_director f_d on f.film_id = f_d.film_id" +
+                "         LEFT JOIN directors d on d.director_id = f_d.director_id " +
+                "WHERE LOWER(d.name) LIKE LOWER('%" + text + "%') " +
+                "GROUP BY f.film_id " +
+                "ORDER BY count(l.user_id) DESC";
+        SqlRowSet rs = jdbcTemplate.queryForRowSet(sql);
+        return rowSetToFilmList(rs);
+    }
+
+    @Override
+    public Collection<Film> searchByTitle(String text) {
+        String sql = "SELECT f.*, m.* FROM films f" +
+                "    LEFT  JOIN likes l ON f.film_id = l.film_id" +
+                "    JOIN mpa m ON f.mpa_id = m.mpa_id" +
+                "    WHERE LOWER(f.NAME) LIKE LOWER('%" + text + "%')" +
+                "    GROUP BY f.FILM_ID " +
+                "    ORDER BY count(l.USER_ID) DESC";
+        SqlRowSet rs = jdbcTemplate.queryForRowSet(sql);
+        return rowSetToFilmList(rs);
+    }
+
+
+    @Override
+    public Collection<Film> searchByTitleAndDescription(String text) {
+        String sql = "SELECT f.*, m.* " +
+                "FROM films f" +
+                "         LEFT JOIN likes l ON f.film_id = l.film_id" +
+                "         JOIN mpa m ON f.mpa_id = m.mpa_id" +
+                "         LEFT JOIN film_director f_d on f.film_id = f_d.film_id" +
+                "         LEFT JOIN directors d on d.director_id = f_d.director_id " +
+                "WHERE LOWER(d.name) LIKE LOWER('%" + text + "%') OR LOWER(f.NAME) LIKE LOWER('%" + text + "%') " +
+                "GROUP BY f.film_id " +
+                "ORDER BY count(l.user_id) DESC";
+        SqlRowSet rs = jdbcTemplate.queryForRowSet(sql);
+        return rowSetToFilmList(rs);
+    }
+
+    @Override
     public Collection<Film> getByDirectorIdSortByLikes(long directorId) {
         String sql = "SELECT f.*, m.*" +
                 "FROM films f" +

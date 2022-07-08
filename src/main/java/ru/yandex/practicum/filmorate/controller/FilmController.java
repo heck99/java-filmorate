@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.sevice.FilmService;
-import ru.yandex.practicum.filmorate.sevice.UserService;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -46,6 +45,13 @@ public class FilmController extends DefaultController<FilmService, Film> {
                                       @RequestParam() long friendId) {
         log.info(String.format("/GET /common userId = %d, friendId = %d", userId, friendId));
         return service.getCommon(userId, friendId);
+    }
+
+    @GetMapping("/search")
+    public Collection<Film> search(@RequestParam() String query,
+                                      @RequestParam() String by) {
+        log.info(String.format("/GET /search query = %s, by = %s", query, by));
+        return service.search(query, by);
     }
 
     @GetMapping("/director/{directorId}")
