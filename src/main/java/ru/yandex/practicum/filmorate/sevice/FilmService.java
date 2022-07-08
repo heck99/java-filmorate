@@ -16,6 +16,7 @@ import ru.yandex.practicum.filmorate.storage.LikeStorage;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -88,18 +89,35 @@ public class FilmService extends ModelService<Film, FilmStorage> {
         return films;
     }
 
+    public Collection<Film> search(String text, String by) {
+        Collection<Film> films = new ArrayList<>();
+        if(by.contains("title") && by.contains("director")) {
+            films.addAll(storage.searchByTitleAndDescription(text));
+        } else {
+            if (by.contains("title")) {
+                films.addAll(storage.searchByTitle(text));
+            }
+            if (by.contains("director")) {
+                films.addAll(storage.searchByDirector(text));
+            }
+        }
+        setGenreForFilmCollection(films);
+        setDirectorsForFilmCollection(films);
+        return films;
+    }
+
     @Override
     public Film create(Film element) {
         Film film = super.create(element);
         Collection<Genre> genres = element.getGenres();
         Collection<Director> directors = element.getDirectors();
-        if(genres != null) {
-            for (Genre genre: genres) {
+        if (genres != null) {
+            for (Genre genre : genres) {
                 FGStorage.create(film.getId(), genre.getId());
             }
             film.addAllGenre(genres);
         }
-        for (Director director: directors) {
+        for (Director director : directors) {
             FDStorage.create(film.getId(), director.getId());
         }
         film.addAllDirectors(directors);
@@ -130,14 +148,14 @@ public class FilmService extends ModelService<Film, FilmStorage> {
         FDStorage.deleteAllFilmDirectors(film.getId());
         Collection<Genre> genres = element.getGenres();
         Collection<Director> directors = element.getDirectors();
-        if(genres != null) {
-            for (Genre genre: genres) {
+        if (genres != null) {
+            for (Genre genre : genres) {
                 FGStorage.create(film.getId(), genre.getId());
             }
             film.addAllGenre(genres);
         }
-        if(directors.size() > 0) {
-            for (Director director: directors) {
+        if (directors.size() > 0) {
+            for (Director director : directors) {
                 FDStorage.create(film.getId(), director.getId());
             }
             film.addAllDirectors(directors);
@@ -166,20 +184,20 @@ public class FilmService extends ModelService<Film, FilmStorage> {
     }
 
     private void setGenreForFilmCollection(Collection<Film> films) {
-        for(Film film: films) {
+        for (Film film : films) {
             setFilmGenre(film);
         }
     }
 
     private void setFilmGenre(Film film) {
         Collection<Genre> genres = genreService.getAllByFilmId(film.getId());
-        if(genres.size() > 0) {
+        if (genres.size() > 0) {
             film.addAllGenre(genres);
         }
     }
 
     private void setDirectorsForFilmCollection(Collection<Film> films) {
-        for(Film film: films) {
+        for (Film film : films) {
             setFilmDirectors(film);
         }
     }
@@ -191,27 +209,27 @@ public class FilmService extends ModelService<Film, FilmStorage> {
 
     @Override
     protected boolean isValid(Film film) {
-        if(film.getName() == null || film.getName().isBlank()) {
+        if (film.getName() == null || film.getName().isBlank()) {
             log.warn("Movie name is empty");
             throw new ValidationException("Movie name is empty");
         }
 
-        if(film.getDescription().length() >200) {
+        if (film.getDescription().length() > 200) {
             log.warn("Movie description is too long");
             throw new ValidationException("Movie description is too long");
         }
 
-        if(film.getReleaseDate().isBefore(LocalDate.of(1895, 12,28))) {
-            log.warn("Movie release data is too early: " + film.getReleaseDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) );
+        if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
+            log.warn("Movie release data is too early: " + film.getReleaseDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
             throw new ValidationException("Movie release data is too early");
         }
 
-        if(film.getDuration() == null) {
+        if (film.getDuration() == null) {
             log.warn("Movie duration is not specify");
             throw new ValidationException("Movie duration is not specify");
         }
 
-        if(film.getDuration() < 0) {
+        if (film.getDuration() < 0) {
             log.warn("Movie duration is negative: " + film.getDuration());
             throw new ValidationException("Movie duration is negative");
         }

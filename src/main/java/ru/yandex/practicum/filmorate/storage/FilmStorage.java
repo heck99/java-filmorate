@@ -10,4 +10,7 @@ public interface FilmStorage extends ModelStorage<Film>{
     Collection<Film> getCommon(Long id, Long secondId);
     Collection<Film> getByDirectorIdSortByLikes(long directorId);
     Collection<Film> getByDirectorIdSortByYear(long directorId);
+    Collection<Film> searchByDirector(String text);
+    Collection<Film> searchByTitle(String text);
+    Collection<Film> searchByTitleAndDescription(String text);
 }
