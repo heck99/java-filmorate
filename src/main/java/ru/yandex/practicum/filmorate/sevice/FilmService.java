@@ -90,14 +90,18 @@ public class FilmService extends ModelService<Film, FilmStorage> {
     }
 
     public Collection<Film> search(String text, String by) {
+        log.info(String.format("Переменная поиска - %s, параметры поиска - %s", text, by));
         Collection<Film> films = new ArrayList<>();
         if(by.contains("title") && by.contains("director")) {
+            log.info("Обращаесмя к хранилищу поиск по режиссёру и имени");
             films.addAll(storage.searchByTitleAndDescription(text));
         } else {
             if (by.contains("title")) {
+                log.info("Обращаесмя к хранилищу поиск по имени");
                 films.addAll(storage.searchByTitle(text));
             }
             if (by.contains("director")) {
+                log.info("Обращаесмя к хранилищу поиск по режиссёру");
                 films.addAll(storage.searchByDirector(text));
             }
         }
@@ -121,12 +125,12 @@ public class FilmService extends ModelService<Film, FilmStorage> {
             FDStorage.create(film.getId(), director.getId());
         }
         film.addAllDirectors(directors);
-
         return film;
     }
 
     @Override
     public Film getElement(Long id) {
+        log.info("Обращаемся к хранилищу id = {}", id);
         Film film = super.getElement(id);
         setFilmGenre(film);
         setFilmDirectors(film);
@@ -166,16 +170,21 @@ public class FilmService extends ModelService<Film, FilmStorage> {
     }
 
     public Collection<Film> getByDirectorId(long directorId, String sort) {
+        log.info("проверяем наличие режиссёра с id = {}", directorId);
         directorService.getElement(directorId);
+        log.info("Режиссёр существует. sort = {} ", sort);
         Collection<Film> films;
         switch (sort) {
             case "year":
+                log.info("Обращаемся к хранилищу. Сортировка по году выпска");
                 films = storage.getByDirectorIdSortByYear(directorId);
                 break;
             case "likes":
+                log.info("Обращаемся к хранилищу. Сортировка по лайкам");
                 films = storage.getByDirectorIdSortByLikes(directorId);
                 break;
             default:
+                log.info("Неверный параметр sort");
                 throw new ValidationException("введён неверный параметр sortBy");
         }
         setGenreForFilmCollection(films);
