@@ -31,14 +31,117 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Collection<Film> getPopular(int count) {
-        String sql = "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.mpa_id FROM FILMS f" +
-                " LEFT JOIN likes L on f.film_id = L.film_id" +
-                " GROUP BY f.name, f.description, f.name, f.film_id, f.release_date, f.duration, f.mpa_id" +
-                " ORDER BY count(user_id) DESC LIMIT ?";
-        SqlRowSet rs = jdbcTemplate.queryForRowSet(sql, count);
+    public Collection<Film> getPopular(int count, Optional<Integer> genreId, Optional<Integer> year) {
+        StringBuilder condition = new StringBuilder(" WHERE 1=1 ");
+
+        if (year.isPresent()) {
+            condition.append(" AND EXTRACT(YEAR FROM f.RELEASE_DATE) = ? ");
+        }
+        if (genreId.isPresent()) {
+            condition.append(" AND fg.GENRE_ID = ? ");
+        }
+
+        String sqlQuery = "SELECT f.* " +
+                "FROM films f " +
+                "LEFT JOIN mpa m ON f.mpa_id = m.mpa_id " +
+                "LEFT JOIN likes l ON f.film_id = l.film_id " +
+                "LEFT JOIN FILM_GENRE fg on f.film_id = fg.film_id " +
+                condition.toString() +
+                " GROUP BY f.film_id " +
+                "ORDER BY count(l.film_id) DESC " +
+                "LIMIT ?";
+        SqlRowSet rs;
+        if (year.isPresent() && genreId.isPresent()) {
+             rs = jdbcTemplate.queryForRowSet(sqlQuery, year.get(), genreId.get(), count);
+        } else if (year.isPresent()) {
+            rs = jdbcTemplate.queryForRowSet(sqlQuery, year.get(), count);
+        } else if (genreId.isPresent()) {
+            rs = jdbcTemplate.queryForRowSet(sqlQuery,genreId.get(), count);
+        } else {
+            rs = jdbcTemplate.queryForRowSet(sqlQuery, count);
+        }
         return rowSetToFilmList(rs);
     }
+
+    @Override
+    public Collection<Film> getCommon(Long id, Long secondId) {
+        String sql = "SELECT f.*, m.* FROM films f " +
+                "JOIN likes l ON f.film_id = l.film_id " +
+                "JOIN likes l2 ON l.film_id = l2.film_id " +
+                "JOIN mpa m ON f.mpa_id = m.mpa_id " +
+                "WHERE l.user_id = ? AND l2.user_id = ?";
+        SqlRowSet rs = jdbcTemplate.queryForRowSet(sql, id, secondId);
+        return rowSetToFilmList(rs);
+    }
+
+    @Override
+    public Collection<Film> searchByDirector(String text) {
+        String sql = "SELECT f.*, m.* " +
+                "FROM films f" +
+                "         LEFT JOIN likes l ON f.film_id = l.film_id" +
+                "         JOIN mpa m ON f.mpa_id = m.mpa_id" +
+                "         LEFT JOIN film_director f_d on f.film_id = f_d.film_id" +
+                "         LEFT JOIN directors d on d.director_id = f_d.director_id " +
+                "WHERE LOWER(d.name) LIKE LOWER('%" + text + "%') " +
+                "GROUP BY f.film_id " +
+                "ORDER BY count(l.user_id) DESC";
+        SqlRowSet rs = jdbcTemplate.queryForRowSet(sql);
+        return rowSetToFilmList(rs);
+    }
+
+    @Override
+    public Collection<Film> searchByTitle(String text) {
+        String sql = "SELECT f.*, m.* FROM films f" +
+                "    LEFT  JOIN likes l ON f.film_id = l.film_id" +
+                "    JOIN mpa m ON f.mpa_id = m.mpa_id" +
+                "    WHERE LOWER(f.NAME) LIKE LOWER('%" + text + "%')" +
+                "    GROUP BY f.FILM_ID " +
+                "    ORDER BY count(l.USER_ID) DESC";
+        SqlRowSet rs = jdbcTemplate.queryForRowSet(sql);
+        return rowSetToFilmList(rs);
+    }
+
+
+    @Override
+    public Collection<Film> searchByTitleAndDescription(String text) {
+        String sql = "SELECT f.*, m.* " +
+                "FROM films f" +
+                "         LEFT JOIN likes l ON f.film_id = l.film_id" +
+                "         JOIN mpa m ON f.mpa_id = m.mpa_id" +
+                "         LEFT JOIN film_director f_d on f.film_id = f_d.film_id" +
+                "         LEFT JOIN directors d on d.director_id = f_d.director_id " +
+                "WHERE LOWER(d.name) LIKE LOWER('%" + text + "%') OR LOWER(f.NAME) LIKE LOWER('%" + text + "%') " +
+                "GROUP BY f.film_id " +
+                "ORDER BY count(l.user_id) DESC";
+        SqlRowSet rs = jdbcTemplate.queryForRowSet(sql);
+        return rowSetToFilmList(rs);
+    }
+
+    @Override
+    public Collection<Film> getByDirectorIdSortByLikes(long directorId) {
+        String sql = "SELECT f.*, m.*" +
+                "FROM films f" +
+                "    LEFT JOIN likes l ON f.film_id = l.film_id" +
+                "    LEFT JOIN mpa m ON f.mpa_id = m.mpa_id" +
+                "    LEFT JOIN film_director f_d on f.film_id = f_d.film_id" +
+                "    WHERE f_d.director_id = ?" +
+                "    GROUP BY f.film_id" +
+                "    ORDER BY count(l.user_id)";
+        SqlRowSet rs = jdbcTemplate.queryForRowSet(sql, directorId);
+        return rowSetToFilmList(rs);
+    }
+
+    @Override
+    public Collection<Film> getByDirectorIdSortByYear(long directorId) {
+        String sql = "SELECT f.*, m.* FROM films f " +
+                "LEFT JOIN mpa m ON f.mpa_id = m.mpa_id " +
+                "LEFT JOIN film_director f_d on f.film_id = f_d.film_id " +
+                "WHERE f_d.director_id = ?" +
+                "ORDER BY release_date";
+        SqlRowSet rs = jdbcTemplate.queryForRowSet(sql, directorId);
+        return rowSetToFilmList(rs);
+    }
+
 
     @Override
     public Film create(Film element) {
@@ -89,20 +192,36 @@ public class FilmDbStorage implements FilmStorage {
         return rowSetToFilmList(rs);
     }
 
+    @Override
+    public boolean delete(Long id) {
+        String sql = "DELETE FROM films WHERE film_id = ?";
+        int rowUpdated = jdbcTemplate.update(sql, id);
+        return rowUpdated > 0;
+    }
+
     private Film makeFilm(SqlRowSet rs) {
         long id = rs.getLong("film_id");
         String name = rs.getString("name");
         String description = rs.getString("description");
         LocalDate date = rs.getDate("release_date").toLocalDate();
         int duration = rs.getInt("duration");
+        Mpa mpa = getMpaById(rs.getLong("mpa_id"));
+        Film film = new Film(id, name, description, date, duration, mpa);
+        return film;
+    }
+
+    private Mpa getMpaById(Long id) {
         String sql = "SELECT mpa_id, name, description FROM mpa WHERE mpa_id = ?";
-        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, rs.getInt("mpa_id"));
-        rowSet.next();
-        long mpa_id = rowSet.getLong("mpa_id");
-        String mpa_name =  rowSet.getString("name");
-        String mpa_description =  rowSet.getString("description");
-        Mpa mpa = new Mpa(mpa_id, mpa_name, mpa_description);
-        return new Film(id, name, description, date, duration, mpa);
+        SqlRowSet rs = jdbcTemplate.queryForRowSet(sql, id);
+
+        if(!rs.next()) {
+            return null;
+        }
+        long mpa_id = rs.getLong("mpa_id");
+        String mpa_name =  rs.getString("name");
+        String mpa_description =  rs.getString("description");
+
+        return new Mpa(mpa_id, mpa_name, mpa_description);
     }
 
     private List<Film> rowSetToFilmList(SqlRowSet rs) {

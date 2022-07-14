@@ -18,9 +18,6 @@ import java.util.Collection;
 @Slf4j
 public class UserService extends ModelService<User, UserStorage> {
 
-
-    /*Тут я так же решил вставить стораж в сервис пользователей из-за проверки
-     на существование пользователей перед добавлением в друзья */
     FriendStorage friendStorage;
 
     @Autowired
@@ -32,33 +29,25 @@ public class UserService extends ModelService<User, UserStorage> {
 
     public void addFriend(Long id, Long friendId) {
         log.info(String.format("Проверяем наличие пользователя с id = %d и id = %d", id, friendId));
-        if(storage.getElement(id).isEmpty()) {
-            log.info("Пользователь с  id = {} не найден", id);
-            throw new DataDoesNotExistsException(String.format("Пользователь с  id = %d не найден", id));
-        }
-        if(storage.getElement(friendId).isEmpty()) {
-            log.info("Пользователь с  id = {} не найден", friendId);
-            throw new DataDoesNotExistsException(String.format("Пользователь с  id = %d не найден", friendId));
-        }
+        getElement(id);
+        getElement(friendId);
+
         log.info("Обращаемся к хранилищу");
         friendStorage.addFriend(id, friendId);
     }
 
     public Collection<User> getFriends(Long id) {
+        getElement(id);
+
         log.info("Обращаемся к хранилищу");
         return storage.getFriends(id);
     }
 
     public void deleteFriend(Long id, Long delId) {
         log.info(String.format("Проверяем наличие пользователя с id = %d и id = %d", id, delId));
-        if(storage.getElement(id).isEmpty()) {
-            log.info("Пользователь с  id = {} не найден", id);
-            throw new DataDoesNotExistsException(String.format("Пользователь с  id = %d не найден", id));
-        }
-        if(storage.getElement(delId).isEmpty()) {
-            log.info("Пользователь с  id = {} не найден", delId);
-            throw new DataDoesNotExistsException(String.format("Пользователь с  id = %d не найден", delId));
-        }
+        getElement(id);
+        getElement(delId);
+
         log.info("Обращаемся к хранилищу");
         friendStorage.deleteFriend(id, delId);
     }
@@ -66,14 +55,9 @@ public class UserService extends ModelService<User, UserStorage> {
     public Collection<User> getCommonFriends(Long firstId, Long secondId) {
 
         log.info(String.format("Проверяем наличие пользователя с id = %d и id = %d", firstId, secondId));
-        if(storage.getElement(firstId).isEmpty()) {
-            log.info("Пользователь с  id = {} не найден", firstId);
-            throw new DataDoesNotExistsException(String.format("Пользователь с  id = %d не найден", firstId));
-        }
-        if(storage.getElement(secondId).isEmpty()) {
-            log.info("Пользователь с  id = {} не найден", secondId);
-            throw new DataDoesNotExistsException(String.format("Пользователь с  id = %d не найден", secondId));
-        }
+        getElement(firstId);
+        getElement(secondId);
+
         log.info("Обращаемся к хранилищу");
         return storage.getCommonFriends(firstId, secondId);
     }

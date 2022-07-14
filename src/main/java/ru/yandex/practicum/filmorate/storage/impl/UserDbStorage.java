@@ -66,6 +66,13 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
+    public boolean delete(Long id) {
+        String sql = "DELETE FROM users WHERE user_id = ?";
+        int rowUpdated = jdbcTemplate.update(sql, id);
+        return rowUpdated > 0;
+    }
+
+    @Override
     public Collection<User> getFriends(Long id) {
         String sqlRequest = "SELECT u.*\n" +
                 "FROM (SELECT CASE WHEN f.INTERROGATOR_ID = ? THEN f.DEFENDANT_ID WHEN f.DEFENDANT_ID = ? THEN f.INTERROGATOR_ID END AS friends\n" +

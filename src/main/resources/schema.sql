@@ -1,93 +1,138 @@
-create table if not exists GENRES
+create table if not exists genres
 (
-    GENRE_ID INTEGER auto_increment,
-    G_NAME   CHARACTER VARYING,
+    genre_id INTEGER auto_increment,
+    name     CHARACTER VARYING,
     constraint GENRES_PK
         primary key (GENRE_ID)
 );
 
-create table if not exists FRIENDSHIP_STATUS
+create table if not exists directors
 (
-    FRIENDSHIP_STATUS_ID INTEGER auto_increment,
-    NAME                 CHARACTER VARYING,
+    director_id INTEGER auto_increment,
+    name     CHARACTER VARYING,
+    constraint DIRECTORS_PK
+        primary key (director_id)
+);
+
+create table if not exists friendship_status
+(
+    friendship_status_id INTEGER auto_increment,
+    name                 CHARACTER VARYING,
     constraint FRIENDSHIP_STATUS_PK
-        primary key (FRIENDSHIP_STATUS_ID)
+        primary key (friendship_status_id)
 );
 
-create unique index if not exists FRIENDSHIP_STATUS_NAME_UINDEX
-    on FRIENDSHIP_STATUS (NAME);
+create unique index if not exists friendship_status_name_uindex
+    on friendship_status (name);
 
-create table if not exists MPA
+create table if not exists mpa
 (
-    MPA_ID      INTEGER auto_increment,
-    NAME        CHARACTER VARYING,
-    DESCRIPTION CHARACTER VARYING,
+    mpa_id      INTEGER auto_increment,
+    name        CHARACTER VARYING,
+    description CHARACTER VARYING,
     constraint MPA_PK
-        primary key (MPA_ID)
+        primary key (mpa_id)
 );
 
 
 
-create table if not exists FILMS
+create table if not exists films
 (
-    FILM_ID      INTEGER auto_increment,
-    NAME         CHARACTER VARYING,
-    DESCRIPTION  CHARACTER VARYING,
-    RELEASE_DATE DATE,
-    DURATION     INTEGER,
-    MPA_ID       INTEGER,
+    film_id      INTEGER auto_increment,
+    name         CHARACTER VARYING,
+    description  CHARACTER VARYING,
+    release_date DATE,
+    duration     INTEGER,
+    mpa_id       INTEGER,
     constraint FILMS_PK
-        primary key (FILM_ID),
+        primary key (film_id),
     constraint MPA___FK
-        foreign key (MPA_ID) references MPA
+        foreign key (mpa_id) references MPA ON DELETE CASCADE
 );
 
-create table  if not exists FILM_GENRE
+create table if not exists film_genre
 (
-    FILM_ID  INTEGER not null,
-    GENRE_ID INTEGER not null,
+    film_id  INTEGER not null,
+    genre_id INTEGER not null,
     constraint FILM_GENRE_PK
-        primary key (GENRE_ID, FILM_ID),
+        primary key (genre_id, film_id),
     constraint FILM__FK
-        foreign key (FILM_ID) references FILMS,
+        foreign key (film_id) REFERENCES FILMS ON DELETE CASCADE,
     constraint GENRE___FK_2
-        foreign key (GENRE_ID) references GENRES
+        foreign key (genre_id) REFERENCES GENRES ON DELETE CASCADE
 );
 
-create table if not exists USERS
+create table if not exists film_director
 (
-    USER_ID  INTEGER auto_increment,
-    LOGIN    CHARACTER VARYING,
-    EMAIL    CHARACTER VARYING,
-    NAME     CHARACTER VARYING,
-    BIRTHDAY DATE,
+    film_id  INTEGER not null,
+    director_id INTEGER not null,
+    constraint FILM_DIRECTOR_PK
+        primary key (director_id, film_id),
+    constraint FILM__FK_2
+        foreign key (film_id) REFERENCES films ON DELETE CASCADE,
+    constraint DIRECTOR___FK
+        foreign key (director_id) REFERENCES directors ON DELETE CASCADE
+);
+
+create table if not exists users
+(
+    user_id  INTEGER auto_increment,
+    login    CHARACTER VARYING,
+    email    CHARACTER VARYING,
+    name     CHARACTER VARYING,
+    birthday DATE,
     constraint USERS_PK
-        primary key (USER_ID)
+        primary key (user_id)
 );
 
-create table if not exists FRIENDS
+create table if not exists friends
 (
-    INTERROGATOR_ID      INTEGER not null,
-    DEFENDANT_ID         INTEGER not null,
-    FRIENDSHIP_STATUS_ID INTEGER,
+    interrogator_id      INTEGER not null,
+    defendant_id         INTEGER not null,
+    friendship_status_id INTEGER,
     constraint FRIENDS_PK
-        primary key (DEFENDANT_ID, INTERROGATOR_ID),
+        primary key (defendant_id, interrogator_id),
     constraint "first___FK"
-        foreign key (INTERROGATOR_ID) references USERS,
+        foreign key (interrogator_id) references users ON DELETE CASCADE,
     constraint "friendship_status___FK"
-        foreign key (FRIENDSHIP_STATUS_ID) references FRIENDSHIP_STATUS,
+        foreign key (friendship_status_id) references friendship_status ON DELETE CASCADE,
     constraint "second___FK"
-        foreign key (DEFENDANT_ID) references USERS
+        foreign key (defendant_id) references users ON DELETE CASCADE
 );
 
-create table if not exists LIKES
+create table if not exists likes
 (
-    FILM_ID INTEGER not null,
-    USER_ID INTEGER not null,
+    film_id INTEGER not null,
+    user_id INTEGER not null,
     constraint LIKES_PK
-        primary key (USER_ID, FILM_ID),
+        primary key (user_id, film_id),
     constraint "film___FK"
-        foreign key (FILM_ID) references FILMS,
+        foreign key (film_id) references films ON DELETE CASCADE,
     constraint "user___FK"
-        foreign key (USER_ID) references USERS
+        foreign key (user_id) references users ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS reviews
+(
+    review_id          INTEGER AUTO_INCREMENT PRIMARY KEY NOT NULL,
+    content     CHARACTER VARYING                           NOT NULL,
+    is_positive boolean                        NOT NULL,
+    user_id     INTEGER                            NOT NULL,
+    film_id     INTEGER                            NOT NULL,
+    useful      INTEGER       DEFAULT (0),
+        constraint REVIEW_PF
+            primary key (review_id)
+);
+
+create table if not exists likes_review
+(
+    review_id INTEGER not null,
+    user_id INTEGER not null,
+    is_like boolean not null,
+    constraint LIKES_REVIEW_PK
+        primary key (user_id, review_id),
+    constraint "REVIEW___FK"
+        foreign key (review_id) references reviews ON DELETE CASCADE,
+    constraint "LIKES_REVIEW_USER___FK"
+        foreign key (user_id) references users ON DELETE CASCADE
 );

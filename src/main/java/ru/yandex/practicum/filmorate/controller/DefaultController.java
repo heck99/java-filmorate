@@ -28,6 +28,12 @@ public abstract class DefaultController<V extends ModelService, T extends Defaul
         return (T) service.getElement(id);
     }
 
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
+        log.info("/Delete /{}", id);
+        service.delete(id);
+    }
+
     @PostMapping
     public T createData(@Valid @RequestBody T element) {
         log.info("/POST: " + element.toString());

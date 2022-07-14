@@ -8,4 +8,5 @@ public interface ModelStorage<T> {
     T update (T element);
     Optional<T> getElement (Long id);
     Collection<T> getAll();
+    boolean delete(Long id);
 }

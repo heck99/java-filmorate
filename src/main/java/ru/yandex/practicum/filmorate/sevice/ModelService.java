@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.sevice;
 
 import lombok.extern.slf4j.Slf4j;
 import ru.yandex.practicum.filmorate.exception.DataDoesNotExistsException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.DefaultModel;
 import ru.yandex.practicum.filmorate.storage.ModelStorage;
 
@@ -11,13 +12,20 @@ import java.util.Optional;
 @Slf4j
 public abstract class ModelService<V extends DefaultModel, T extends ModelStorage<V>> {
 
-    T storage;
+    protected T storage;
 
     public V create(V element) {
         isValid(element);
         log.info("обращаемся к хранилищу" + element.toString());
         return storage.create(element);
 
+    }
+
+    public void delete (Long id) {
+        if(!storage.delete(id)) {
+            log.warn("Объект с id = {} не найден", id);
+            throw new DataDoesNotExistsException(String.format("Объект с id = %d не найден", id));
+        }
     }
 
     public V getElement(Long id) {
@@ -36,7 +44,6 @@ public abstract class ModelService<V extends DefaultModel, T extends ModelStorag
     public V putElement(V element) {
         V newElement;
         log.info("обращаемся к хранилищу с элементом: " + element.toString());
-        isValid(element);
         if(element.getId() != null) {
             if(storage.getElement(element.getId()).isPresent()) {
                 newElement = storage.update(element);
