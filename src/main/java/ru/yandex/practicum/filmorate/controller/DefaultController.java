@@ -9,7 +9,7 @@ import javax.validation.Valid;
 import java.util.Collection;
 
 @Slf4j
-public abstract class DefaultController<V extends ModelService, T extends DefaultModel> {
+public abstract class DefaultController<V extends ModelService<T, ?>, T extends DefaultModel> {
     V service;
 
     public DefaultController(V service) {
@@ -25,7 +25,7 @@ public abstract class DefaultController<V extends ModelService, T extends Defaul
     @GetMapping("/{id}")
     public T GetElement(@PathVariable Long id) {
         log.info("/GET /{}", id);
-        return (T) service.getElement(id);
+        return service.getElement(id);
     }
 
     @DeleteMapping("/{id}")
@@ -37,13 +37,13 @@ public abstract class DefaultController<V extends ModelService, T extends Defaul
     @PostMapping
     public T createData(@Valid @RequestBody T element) {
         log.info("/POST: " + element.toString());
-        return (T) service.create(element);
+        return service.create(element);
     }
 
     @PutMapping
     public T updateData (@Valid @RequestBody T element) {
         log.info("/PUT: " + element.toString());
-        return (T) service.putElement(element);
+        return service.putElement(element);
     }
 
 }
