@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.storage.impl;
 
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -8,7 +7,6 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Review;
-import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.ReviewStorage;
 
 import java.sql.PreparedStatement;
@@ -17,10 +15,10 @@ import java.util.*;
 @Component
 public class ReviewDbStorage implements ReviewStorage {
 
-    JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public ReviewDbStorage(JdbcTemplate jdbcTemplate){
+    public ReviewDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -62,7 +60,7 @@ public class ReviewDbStorage implements ReviewStorage {
     public Optional<Review> getElement(Long id) {
         String sqlQuery = "SELECT * FROM reviews WHERE review_id = ?";
         SqlRowSet rs = jdbcTemplate.queryForRowSet(sqlQuery, id);
-        if(rs.next()){
+        if (rs.next()) {
             return Optional.of(makeReview(rs));
         }
         return Optional.empty();
@@ -78,7 +76,7 @@ public class ReviewDbStorage implements ReviewStorage {
     @Override
     public boolean delete(Long id) {
         String sqlQuery = "DELETE FROM reviews WHERE review_id = ?";
-        int updatedRow =  jdbcTemplate.update(sqlQuery, id);
+        int updatedRow = jdbcTemplate.update(sqlQuery, id);
         return updatedRow > 0;
     }
 
@@ -96,7 +94,7 @@ public class ReviewDbStorage implements ReviewStorage {
         Long filmId = rs.getLong("film_id");
         boolean isPositive = rs.getBoolean("is_positive");
         int useful = rs.getInt("useful");
-        return new Review(id, content, isPositive, userId, filmId,  useful);
+        return new Review(id, content, isPositive, userId, filmId, useful);
     }
 
     private List<Review> rowSetToReviewList(SqlRowSet rs) {

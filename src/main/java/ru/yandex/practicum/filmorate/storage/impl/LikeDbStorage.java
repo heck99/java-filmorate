@@ -9,7 +9,7 @@ import ru.yandex.practicum.filmorate.storage.LikeStorage;
 @Component("LikeDbStorage")
 public class LikeDbStorage implements LikeStorage {
 
-    JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
 
     public LikeDbStorage(JdbcTemplate jdbcTemplate) {

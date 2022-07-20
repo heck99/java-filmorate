@@ -10,7 +10,7 @@ import java.util.Collection;
 
 @Service
 @Slf4j
-public class DirectorService extends ModelService<Director, DirectorStorage>{
+public class DirectorService extends ModelService<Director, DirectorStorage> {
 
     public DirectorService(DirectorStorage storage) {
         this.storage = storage;

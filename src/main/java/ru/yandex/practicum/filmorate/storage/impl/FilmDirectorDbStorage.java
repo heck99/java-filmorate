@@ -11,7 +11,7 @@ import ru.yandex.practicum.filmorate.storage.FilmDirectorStorage;
 @AllArgsConstructor
 public class FilmDirectorDbStorage implements FilmDirectorStorage {
 
-    JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     @Override
     public void create(Long filmId, Long directorId) {

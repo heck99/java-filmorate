@@ -7,7 +7,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.FriendAlreadyExistsException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
@@ -19,8 +18,9 @@ public class UserDbStorage implements UserStorage {
 
     private final Logger log = LoggerFactory.getLogger(UserDbStorage.class);
     private final JdbcTemplate jdbcTemplate;
+
     @Autowired
-    public UserDbStorage(JdbcTemplate jdbcTemplate){
+    public UserDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -49,7 +49,7 @@ public class UserDbStorage implements UserStorage {
     public Optional<User> getElement(Long id) {
         String sql = "select * from USERS where USER_ID = ?";
         SqlRowSet rs = jdbcTemplate.queryForRowSet(sql, id);
-        if(rs.next()) {
+        if (rs.next()) {
             log.info("Пользователь с id = {} найден", id);
             return Optional.of(makeUser(rs));
         } else {
@@ -106,7 +106,7 @@ public class UserDbStorage implements UserStorage {
         while (rs.next()) {
             list.add(makeUser(rs));
         }
-        log.info("Возвращено {} пользователей",list.size());
+        log.info("Возвращено {} пользователей", list.size());
         return list;
     }
 
@@ -119,7 +119,7 @@ public class UserDbStorage implements UserStorage {
         return values;
     }
 
-    private User makeUser(SqlRowSet rs){
+    private User makeUser(SqlRowSet rs) {
         Long id = rs.getLong("user_id");
         String login = rs.getString("login");
         String email = rs.getString("email");

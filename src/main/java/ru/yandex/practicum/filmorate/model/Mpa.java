@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class Mpa extends DefaultModel{
+public class Mpa extends DefaultModel {
     private String name;
     private String description;
 

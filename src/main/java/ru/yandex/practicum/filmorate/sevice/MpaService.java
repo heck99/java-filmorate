@@ -19,7 +19,7 @@ public class MpaService {
     public Mpa getElement(Long id) {
         log.info("Обращаемся к хранилищу. id = {}", id);
         Optional<Mpa> element = storage.getElement(id);
-        if(element.isEmpty()) {
+        if (element.isEmpty()) {
             log.info("Объект с id = {} не найден", id);
             throw new DataDoesNotExistsException(String.format("Объект с id = %d не найден", id));
         }

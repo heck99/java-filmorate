@@ -29,7 +29,7 @@ public class ReviewService extends ModelService<Review, ReviewStorage> {
     public Collection<Review> getByFilmId(Optional<Long> id, int count) {
         log.info("id = {}, count = {}", id, count);
         Collection<Review> col;
-        if(id.isPresent()) {
+        if (id.isPresent()) {
             log.info("Обращаемся к хранилищу. Поиск по filmId");
             filmService.getElement(id.get());
             col = storage.findByFilmId(id.get(), count);
@@ -43,7 +43,7 @@ public class ReviewService extends ModelService<Review, ReviewStorage> {
     @Override
     public Review putElement(Review element) {
         log.info("element.id = {}", element.getId());
-        if(element.getId() != null) {
+        if (element.getId() != null) {
             log.info("Обновляем поля элемента");
             Review gotted = getElement(element.getId());
             element.setUseful(gotted.getUseful());
@@ -132,8 +132,8 @@ public class ReviewService extends ModelService<Review, ReviewStorage> {
 
     @Override
     protected boolean isValid(Review element) {
-       userService.getElement(element.getUserId());
-       filmService.getElement(element.getFilmId());
+        userService.getElement(element.getUserId());
+        filmService.getElement(element.getFilmId());
         return true;
     }
 }

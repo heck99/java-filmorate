@@ -20,10 +20,9 @@ public class ReviewController extends DefaultController<ReviewService, Review> {
         super(service);
     }
 
-
     @GetMapping(params = {"filmId"})
     public Collection<Review> getByFilmId(@RequestParam(defaultValue = "10", required = false) Integer count,
-                                              @RequestParam(required = false) Long filmId) {
+                                          @RequestParam(required = false) Long filmId) {
         log.info(String.format("/GET /reviews/%d count = %d", filmId, count));
         return service.getByFilmId(Optional.ofNullable(filmId), count);
     }

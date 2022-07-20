@@ -11,7 +11,7 @@ import java.util.Collection;
 @Slf4j
 @RestController()
 @RequestMapping("/users")
-public class UserController extends DefaultController<UserService, User>{
+public class UserController extends DefaultController<UserService, User> {
 
     public UserController(UserService service) {
         super(service);
@@ -32,7 +32,7 @@ public class UserController extends DefaultController<UserService, User>{
     @GetMapping("/{id}/friends")
     public Collection<User> getFriends(@PathVariable Long id) {
         log.info(String.format("/GET /users/%d/friends", id));
-        return  service.getFriends(id);
+        return service.getFriends(id);
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")

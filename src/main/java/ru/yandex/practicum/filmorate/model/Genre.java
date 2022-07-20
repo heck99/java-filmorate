@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.model;
 
-public class Genre extends DefaultModel{
+public class Genre extends DefaultModel {
 
     String name;
 

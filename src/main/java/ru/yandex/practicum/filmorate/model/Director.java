@@ -2,7 +2,7 @@ package ru.yandex.practicum.filmorate.model;
 
 import javax.validation.constraints.NotBlank;
 
-public class Director extends DefaultModel{
+public class Director extends DefaultModel {
     @NotBlank
     private String name;
 

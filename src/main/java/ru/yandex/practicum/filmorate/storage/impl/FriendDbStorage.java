@@ -12,7 +12,7 @@ import ru.yandex.practicum.filmorate.storage.FriendStorage;
 @Slf4j
 public class FriendDbStorage implements FriendStorage {
 
-    JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     public FriendDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -33,9 +33,9 @@ public class FriendDbStorage implements FriendStorage {
                 "on f_s.FRIENDSHIP_STATUS_ID = F.FRIENDSHIP_STATUS_ID " +
                 "where (f.DEFENDANT_ID = ? and f.INTERROGATOR_ID = ?) OR (f.DEFENDANT_ID = ? and f.INTERROGATOR_ID = ?)";
         SqlRowSet rs = jdbcTemplate.queryForRowSet(sqlRequest, interrogator, defendant, defendant, interrogator);
-        if (rs.next()){
+        if (rs.next()) {
             String friendshipStatus = rs.getString("name");
-            if(friendshipStatus.equals("request")){
+            if (friendshipStatus.equals("request")) {
                 String sqlRequest3 = "UPDATE FRIENDS SET FRIENDSHIP_STATUS_ID = (SELECT FRIENDSHIP_STATUS_ID" +
                         " FROM FRIENDSHIP_STATUS WHERE NAME = 'accept' LIMIT 1) WHERE INTERROGATOR_ID = ? AND DEFENDANT_ID = ?";
                 jdbcTemplate.update(sqlRequest3);

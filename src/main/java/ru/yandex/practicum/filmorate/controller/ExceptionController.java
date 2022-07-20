@@ -13,24 +13,17 @@ import java.util.stream.Collectors;
 public class ExceptionController {
 
     @ResponseBody
-    @ExceptionHandler({ValidationException.class, FriendAlreadyExistsException.class, FilmAlreadyLiked.class})
+    @ExceptionHandler({ValidationException.class, FriendAlreadyExistsException.class, FilmAlreadyLiked.class,})
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public String onInternalServerError(RuntimeException e) {
         return e.getMessage();
     }
 
     @ResponseBody
-    @ExceptionHandler({ NoFriendException.class, NoLikeException.class, DataDoesNotExistsException.class})
+    @ExceptionHandler({NoFriendException.class, NoLikeException.class, DataDoesNotExistsException.class,
+            DataIntegrityViolationException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public String onNotFoundError(RuntimeException e) {
-        return e.getMessage();
-    }
-
-
-    @ResponseBody
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public String onNotFoundError(DataIntegrityViolationException e) {
         return e.getMessage();
     }
 

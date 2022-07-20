@@ -16,7 +16,7 @@ import java.util.*;
 @Component
 public class DirectorDbStorage implements DirectorStorage {
 
-    JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     @Override
     public Director create(Director element) {
@@ -40,7 +40,7 @@ public class DirectorDbStorage implements DirectorStorage {
     public Optional<Director> getElement(Long id) {
         String sql = "SELECT * FROM directors where director_id = ?";
         SqlRowSet rs = jdbcTemplate.queryForRowSet(sql, id);
-        if(rs.next()) {
+        if (rs.next()) {
             log.info("Режиссёр с id = {} найден", id);
             return Optional.of(makeDirector(rs));
         } else {
@@ -70,7 +70,7 @@ public class DirectorDbStorage implements DirectorStorage {
         return rowSetToDirectorList(rs);
     }
 
-    private Director makeDirector(SqlRowSet rs){
+    private Director makeDirector(SqlRowSet rs) {
         Long id = rs.getLong("director_id");
         String name = rs.getString("name");
         return new Director(id, name);
@@ -81,7 +81,7 @@ public class DirectorDbStorage implements DirectorStorage {
         while (rs.next()) {
             list.add(makeDirector(rs));
         }
-        log.info("Возвращено {} режиссёров",list.size());
+        log.info("Возвращено {} режиссёров", list.size());
         return list;
     }
 

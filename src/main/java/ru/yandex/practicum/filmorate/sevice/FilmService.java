@@ -92,7 +92,7 @@ public class FilmService extends ModelService<Film, FilmStorage> {
     public Collection<Film> search(String text, String by) {
         log.info(String.format("Переменная поиска - %s, параметры поиска - %s", text, by));
         Collection<Film> films = new ArrayList<>();
-        if(by.contains("title") && by.contains("director")) {
+        if (by.contains("title") && by.contains("director")) {
             log.info("Обращаесмя к хранилищу поиск по режиссёру и имени");
             films.addAll(storage.searchByTitleAndDescription(text));
         } else {

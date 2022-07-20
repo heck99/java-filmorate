@@ -21,8 +21,8 @@ public abstract class ModelService<V extends DefaultModel, T extends ModelStorag
 
     }
 
-    public void delete (Long id) {
-        if(!storage.delete(id)) {
+    public void delete(Long id) {
+        if (!storage.delete(id)) {
             log.warn("Объект с id = {} не найден", id);
             throw new DataDoesNotExistsException(String.format("Объект с id = %d не найден", id));
         }
@@ -30,7 +30,7 @@ public abstract class ModelService<V extends DefaultModel, T extends ModelStorag
 
     public V getElement(Long id) {
         Optional<V> element = storage.getElement(id);
-        if(element.isEmpty()) {
+        if (element.isEmpty()) {
             throw new DataDoesNotExistsException(String.format("Объект с id = %d не найден", id));
         }
         return element.get();
@@ -44,8 +44,8 @@ public abstract class ModelService<V extends DefaultModel, T extends ModelStorag
     public V putElement(V element) {
         V newElement;
         log.info("обращаемся к хранилищу с элементом: " + element.toString());
-        if(element.getId() != null) {
-            if(storage.getElement(element.getId()).isPresent()) {
+        if (element.getId() != null) {
+            if (storage.getElement(element.getId()).isPresent()) {
                 newElement = storage.update(element);
                 log.info("Data info has been updated");
             } else {

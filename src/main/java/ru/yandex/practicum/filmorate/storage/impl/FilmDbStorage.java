@@ -23,7 +23,7 @@ import java.util.Optional;
 @Slf4j
 public class FilmDbStorage implements FilmStorage {
 
-    JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
 
     public FilmDbStorage(JdbcTemplate jdbcTemplate) {
@@ -52,11 +52,11 @@ public class FilmDbStorage implements FilmStorage {
                 "LIMIT ?";
         SqlRowSet rs;
         if (year.isPresent() && genreId.isPresent()) {
-             rs = jdbcTemplate.queryForRowSet(sqlQuery, year.get(), genreId.get(), count);
+            rs = jdbcTemplate.queryForRowSet(sqlQuery, year.get(), genreId.get(), count);
         } else if (year.isPresent()) {
             rs = jdbcTemplate.queryForRowSet(sqlQuery, year.get(), count);
         } else if (genreId.isPresent()) {
-            rs = jdbcTemplate.queryForRowSet(sqlQuery,genreId.get(), count);
+            rs = jdbcTemplate.queryForRowSet(sqlQuery, genreId.get(), count);
         } else {
             rs = jdbcTemplate.queryForRowSet(sqlQuery, count);
         }
@@ -149,14 +149,14 @@ public class FilmDbStorage implements FilmStorage {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(
                 connection -> {
-            PreparedStatement stmt = connection.prepareStatement(sqlQuery, new String[]{"film_id"});
-            stmt.setString(1, element.getName());
-            stmt.setString(2, element.getDescription());
-            stmt.setDate(3, Date.valueOf(element.getReleaseDate()));
-            stmt.setLong(4, element.getDuration());
-            stmt.setLong(5, element.getMpa().getId());
-            return stmt;
-        }, keyHolder);
+                    PreparedStatement stmt = connection.prepareStatement(sqlQuery, new String[]{"film_id"});
+                    stmt.setString(1, element.getName());
+                    stmt.setString(2, element.getDescription());
+                    stmt.setDate(3, Date.valueOf(element.getReleaseDate()));
+                    stmt.setLong(4, element.getDuration());
+                    stmt.setLong(5, element.getMpa().getId());
+                    return stmt;
+                }, keyHolder);
         long id = keyHolder.getKey().longValue();
         log.info("Пользователь с id = {} создан", id);
         return getElement(id).get();
@@ -176,7 +176,7 @@ public class FilmDbStorage implements FilmStorage {
     public Optional<Film> getElement(Long id) {
         String sql = "SELECT * FROM films WHERE film_id = ?";
         SqlRowSet rs = jdbcTemplate.queryForRowSet(sql, id);
-        if(rs.next()) {
+        if (rs.next()) {
             log.info("Фильм с id ={} найден", id);
             return Optional.of(makeFilm(rs));
         } else {
@@ -206,20 +206,19 @@ public class FilmDbStorage implements FilmStorage {
         LocalDate date = rs.getDate("release_date").toLocalDate();
         int duration = rs.getInt("duration");
         Mpa mpa = getMpaById(rs.getLong("mpa_id"));
-        Film film = new Film(id, name, description, date, duration, mpa);
-        return film;
+        return new Film(id, name, description, date, duration, mpa);
     }
 
     private Mpa getMpaById(Long id) {
         String sql = "SELECT mpa_id, name, description FROM mpa WHERE mpa_id = ?";
         SqlRowSet rs = jdbcTemplate.queryForRowSet(sql, id);
 
-        if(!rs.next()) {
+        if (!rs.next()) {
             return null;
         }
         long mpa_id = rs.getLong("mpa_id");
-        String mpa_name =  rs.getString("name");
-        String mpa_description =  rs.getString("description");
+        String mpa_name = rs.getString("name");
+        String mpa_description = rs.getString("description");
 
         return new Mpa(mpa_id, mpa_name, mpa_description);
     }

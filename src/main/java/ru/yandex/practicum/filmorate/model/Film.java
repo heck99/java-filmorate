@@ -18,7 +18,7 @@ import java.util.Set;
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = true)
-public class Film extends DefaultModel{
+public class Film extends DefaultModel {
     @NotEmpty
     private String name;
     @Size(min = 1, max = 200)
@@ -41,7 +41,8 @@ public class Film extends DefaultModel{
         this.duration = duration;
         this.mpa = mpa;
     }
-    public Film(){
+
+    public Film() {
         super();
     }
 
@@ -53,8 +54,9 @@ public class Film extends DefaultModel{
         this.duration = duration;
         this.mpa = mpa;
     }
+
     public void addAllGenre(Collection<Genre> genres) {
-        if(this.genres == null) {
+        if (this.genres == null) {
             this.genres = new HashSet<>();
         }
         this.genres.addAll(genres);

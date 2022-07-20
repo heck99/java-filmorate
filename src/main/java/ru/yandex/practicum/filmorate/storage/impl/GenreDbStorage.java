@@ -16,7 +16,7 @@ import java.util.*;
 @Component
 public class GenreDbStorage implements GenreStorage {
 
-    JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     @Override
     public Collection<Genre> getAll() {
@@ -62,7 +62,7 @@ public class GenreDbStorage implements GenreStorage {
     public Optional<Genre> getElement(Long id) {
         String sql = "SELECT * FROM genres where genre_id = ?";
         SqlRowSet rs = jdbcTemplate.queryForRowSet(sql, id);
-        if(rs.next()) {
+        if (rs.next()) {
             log.info("Жанр с id = {} найден", id);
             return Optional.of(makeGenre(rs));
         } else {
@@ -71,7 +71,7 @@ public class GenreDbStorage implements GenreStorage {
         }
     }
 
-    private Genre makeGenre(SqlRowSet rs){
+    private Genre makeGenre(SqlRowSet rs) {
         Long id = rs.getLong("genre_id");
         String name = rs.getString("name");
         return new Genre(id, name);
@@ -82,7 +82,7 @@ public class GenreDbStorage implements GenreStorage {
         while (rs.next()) {
             list.add(makeGenre(rs));
         }
-        log.info("Возвращено {} жанров",list.size());
+        log.info("Возвращено {} жанров", list.size());
         return list;
     }
 

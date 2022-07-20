@@ -10,8 +10,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = true)
-public class User extends DefaultModel
-{
+public class User extends DefaultModel {
     private String name;
     @NotEmpty
     @Email

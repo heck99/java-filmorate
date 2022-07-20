@@ -16,13 +16,13 @@ import java.util.Collection;
 @RequestMapping("/mpa")
 @AllArgsConstructor
 public class MpaController {
-    MpaService service;
+    private final MpaService service;
 
     @GetMapping()
     public Collection<Mpa> GetData() {
         log.info("/GET");
         return service.getAll();
-        
+
     }
 
     @GetMapping("/{id}")

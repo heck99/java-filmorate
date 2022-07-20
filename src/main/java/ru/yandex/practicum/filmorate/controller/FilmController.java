@@ -14,7 +14,6 @@ import java.util.Optional;
 @RequestMapping("/films")
 public class FilmController extends DefaultController<FilmService, Film> {
 
-
     @Autowired
     public FilmController(FilmService service) {
         super(service);
@@ -34,8 +33,8 @@ public class FilmController extends DefaultController<FilmService, Film> {
 
     @GetMapping("/popular")
     public Collection<Film> getPopularFilms(@RequestParam(defaultValue = "10", required = false) Integer count,
-                                             @RequestParam(required = false) Optional<Integer> year,
-                                             @RequestParam(required = false) Optional<Integer> genreId) {
+                                            @RequestParam(required = false) Optional<Integer> year,
+                                            @RequestParam(required = false) Optional<Integer> genreId) {
         log.info(String.format("/GET /popular count = %s, year = %s, genreId = %s", count, year, genreId));
         return service.getPopular(count, genreId, year);
     }
@@ -49,7 +48,7 @@ public class FilmController extends DefaultController<FilmService, Film> {
 
     @GetMapping("/search")
     public Collection<Film> search(@RequestParam() String query,
-                                      @RequestParam() String by) {
+                                   @RequestParam() String by) {
         log.info(String.format("/GET /search query = %s, by = %s", query, by));
         return service.search(query, by);
     }
